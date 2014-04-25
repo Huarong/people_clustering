@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import copy
 
 import util
 
@@ -13,12 +14,16 @@ class StopwordFilter(object):
         else:
             self.stopword_path = path
         self.stopwords = None
-        self.load_stopword(self.stopword_path)
+        self.load_stopword()
 
     def load_stopword(self):
         with open(self.stopword_path) as f:
             self.stopwords = set([line.strip() for line in f.readlines()])
         return None
 
-    def filter(self, tokens):
-        return [e for e in tokens if e not in self.stopwords]
+    def filter(self, features):
+        f = copy.deepcopy(features)
+        for k in f:
+            if k in self.stopwords:
+                del f[k]
+        return f
