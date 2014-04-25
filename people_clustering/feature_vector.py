@@ -5,7 +5,11 @@
 Construct a feature space vector and compute the similarity matrix.
 """
 
+import os
 import math
+import time
+
+import util
 
 
 class PersonCorpus(object):
@@ -18,6 +22,7 @@ class PersonCorpus(object):
         self.l2_norm = {}
         self.is_sorted = False
         self.is_tfidf = False
+        self.matrix = None
 
     def add_vector(self, vec):
         self.corpus_vector_num += 1
@@ -42,7 +47,7 @@ class PersonCorpus(object):
             self.corpus_feature_appear_vec_num[k] += self.feature_freq.get(k, 0) + 1
         return None
 
-    def get_matrix(self):
+    def compute_matrix(self):
         if not self.is_sorted:
             self.sort()
         if not self.is_tfidf:
@@ -55,12 +60,31 @@ class PersonCorpus(object):
             tfidf = vec.tfidf
             for f_no, fv in tfidf.items():
                 matrix[i][f_no] = fv
-        return matrix
+        self.matrix = matrix
+        return None
+
+    def get_matrix(self):
+        return self.matrix
+
+    def dump_matrix(self, path=None):
+        if path is None:
+            tmp_path = os.path.join(util.ROOT, 'tmp')
+            if not os.path.exists(tmp_path):
+                os.mkdir(tmp_path)
+            path = os.path.join(tmp_path, '%d.matrix' % int(time.time()))
+
+        with open(path, 'wb') as out:
+            for row in self.matrix:
+                out.write(' '.join(row))
+                out.write(os.linesep)
+        print 'Finish writing matrix to %s' % path
+        return None
 
 
 
 class FeatureMapper(object):
-# Use a dictionary using integer as keys to represent the feature name to accelerate the speed to computing.
+    # Use a dictionary using integer as keys
+    # to represent the feature name to accelerate the speed to computing.
     def __init__(self):
         self.fmapper = {}
 
@@ -77,7 +101,7 @@ class FeatureMapper(object):
 
 
 class FeatureVector(object):
-    def __init__(self, features, feature_mapper, doc_meta,):
+    def __init__(self, features, feature_mapper, doc_meta):
         self.feature_mapper = feature_mapper
         self.features = None
         self.vector = None

@@ -6,7 +6,7 @@ from lxml import etree
 from readability.readability import Document
 
 
-def extract(path):
+def text_extract(path):
     with open(path) as f:
         html = f.read()
         doc = Document(html)

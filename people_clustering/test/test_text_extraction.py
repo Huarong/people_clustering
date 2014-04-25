@@ -9,7 +9,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 sys.path.insert(0, ROOT)
 
-from people_clustering import text_extraction
+from people_clustering.text_extraction import text_extract
 
 
 class TestTextExtraction(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestTextExtraction(unittest.TestCase):
     def test_extract(self):
         global ROOT
         path = os.path.join(ROOT, 'data/weps2007_data_1.1/traininig/web_pages/Abby_Watkins/raw/002/index.html')
-        summary = text_extraction.extract(path)
+        summary = text_extract(path)
         with open('Abby_Watkins.summary') as f:
             target = f.read().decode('utf-8')
         self.assertMultiLineEqual(target, summary)
