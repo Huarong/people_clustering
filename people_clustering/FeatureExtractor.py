@@ -67,18 +67,20 @@ class FeatureExtractor(object):
     def extract(self, text, limit=1,tagList=['NN','VB','VBD']):
         sents = segmenter(text)
         tokens = []
+        wordcount = 0
         for sent in sents:
             tokens.extend(tokenizer(sent))
         tagTube = tagger(tokens)
 
         wordDict = {}
         for term in tagTube:
+            wordcount += 1
             if term[1] in tagList and term[0] not in self.stops:
                 meanList = self.abstract(term[0],term[1],limit)
                 for w in meanList:
                     wordDict[w] = wordDict.get(w,0) + 1
 
-        return wordDict
+        return wordDict,wordcount
 
 
 class TestFilter(unittest.TestCase):
@@ -88,7 +90,9 @@ class TestFilter(unittest.TestCase):
         Do you like this book?
         """
         target = {'computer.n.01': 1, 'book.n.01': 3, 'give.v.01': 1}
-        self.assertDictEqual(target, flt.extract(text,1))
+        wordDict, count = flt.extract(text,1)
+        print count
+        self.assertDictEqual(target, wordDict)
         # print filt(text)
 
         # self.assertEqual("abcd", "abcf")
