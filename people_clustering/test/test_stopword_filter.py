@@ -13,11 +13,10 @@ class TestStopwordFilter(unittest.TestCase):
         self.swf = StopwordFilter()
 
     def test_filter(self):
-        tokens = [(u'risk', 108), (u'be', 72), (u'was', 64), (u'profit', 59), (u'market', 41), (u'had', 38), (u'trading', 36), (u'were', 36)]
-        print tokens
-        got = self.swf.filter(tokens)
-        target = [(u'risk', 108), (u'profit', 59), (u'market', 41), (u'had', 38), (u'trading', 36)]
-        self.assertListEqual(target, got)
+        features = {u'be': 72, u'risk': 108, u'profit': 59, u'had': 38, u'trading': 36, u'were': 36, u'was': 64, u'market': 41}
+        got = self.swf.filter(features)
+        target = {u'profit': 59, u'had': 38, u'trading': 36, u'risk': 108, u'market': 41}
+        self.assertDictEqual(target, got)
 
 if __name__ == '__main__':
     unittest.main()

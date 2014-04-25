@@ -22,8 +22,8 @@ class StopwordFilter(object):
         return None
 
     def filter(self, features):
-        f = copy.deepcopy(features)
-        for k in f:
-            if k in self.stopwords:
-                del f[k]
+        f = {}
+        for k, v in features.items():
+            if k not in self.stopwords:
+                f[k] = v
         return f
