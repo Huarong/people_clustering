@@ -1,11 +1,16 @@
 #coding:utf-8
 
+import os
+import json
 import unittest
+from collections import defaultdict
 
 from nltk import word_tokenize as tokenizer
 from nltk import pos_tag as tagger
 from nltk import sent_tokenize as segmenter
 from nltk.corpus import wordnet as wn
+
+import util
 
 class FeatureExtractor(object):
     """Extract content words from text;
@@ -97,5 +102,29 @@ class TestFilter(unittest.TestCase):
 
         # self.assertEqual("abcd", "abcf")
 
+
+def main():
+    flt = FeatureExtractor()
+    text_dir = os.path.join(util.ROOT, 'data/bodytext/')
+    feature_dir = os.path.join(util.ROOT, 'pickle/features/')
+    if not os.path.exists(feature_dir):
+        os.makedirs(feature_dir)
+    for name in os.listdir(text_dir):
+        name_dir = os.path.join(text_dir, name)
+        features = {}
+        print 'begin %s' % name
+        for rank_file_name in os.listdir(name_dir):
+            rank = rank_file_name.split('.')[0]
+            print 'start %s' % rank_file_name
+            with open(os.path.join(name_dir, rank_file_name)) as rank_file:
+                text = rank_file.read()
+                features[rank] = flt.extract(text)
+        features_pickle_path = os.path.join(feature_dir, '%s.json' % name)
+        with open(features_pickle_path, 'wb') as fp:
+            json.dump(features, fp)
+    return None
+
+
 if __name__ =="__main__":
-    unittest.main()
+    # unittest.main()
+    main()
