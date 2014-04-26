@@ -18,9 +18,11 @@ def main():
         os.makedirs(category_dir)
 
     clusterer = GAAClusterer()
+    count = 0
     for file_name in os.listdir(matrix_dir):
         name = file_name.split('.')[0]
-        print name
+        count += 1
+        print 'begin %s: %s' % (count, name)
         file_path = os.path.join(matrix_dir, file_name)
         matrix = util.load_matrix(file_path)
         print '--------------'
