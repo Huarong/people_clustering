@@ -98,7 +98,7 @@ class GAAClusterer(VectorSpaceClusterer):
             for i in range(l):
                 for j,c in enumerate(clusters):
                     if i in c:
-                        result.append(j)
+                        result.append((j,))
             print result
             print "*"*10
             results.append(result)
@@ -313,7 +313,7 @@ def demo():
     clusterer = GAAClusterer(1)                 # 限定最少类的个数
     result = clusterer.cluster(vectors, False,"euc", "mean")    # 返回聚类结果列表
 
-    clusterer.draw_2D(vectors, result)          # 绘制分类后的二维图
+    clusterer.draw_2D(vectors, [e[0] for e in result])          # 绘制分类后的二维图
 
 
 if __name__ == '__main__':
