@@ -99,9 +99,13 @@ class GAAClusterer(VectorSpaceClusterer):
                 for j,c in enumerate(clusters):
                     if i in c:
                         result.append(j)
-            print result
-            print "*"*10
+            # print result
+            # print "*"*10
             results.append(result)
+
+        if(1==self._num_clusters):
+            ADs.append(0)
+            results.append([0])
 
         l_ADs = len(ADs)
         minAD = ADs[0]
@@ -112,11 +116,12 @@ class GAAClusterer(VectorSpaceClusterer):
                 minAD = ADs[i]
 
         self.update_clusters(self._num_clusters)
+
         return results[min_index]
 
     def update_clusters(self, num_clusters):
         clusters = self._dendrogram.groups(num_clusters)
-        print clusters
+        # print clusters
         self._centroids = []
         for cluster in clusters:
             assert len(cluster) > 0
@@ -306,7 +311,8 @@ def rand_2D_vector(n,m):
 '''    实例： 生成 250 个一个随机二维样本，大致属于 8 个类    '''
 def demo():
 
-    tmpV = rand_2D_vector(250,8)
+    # tmpV = rand_2D_vector(250,8)
+    tmpV = [(5,6)]
 
     vectors = [numpy.array(f) for f in tmpV]
 

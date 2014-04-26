@@ -42,7 +42,7 @@ class VectorSpaceClusterer(ClusterI):
         if self._should_normalise:
             vectors = map(self._normalise, vectors)
 
-        print vectors
+        # print vectors
 
         # use SVD to reduce the dimensionality
         if self._svd_dimensions and self._svd_dimensions < len(vectors[0]):
