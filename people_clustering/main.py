@@ -30,7 +30,7 @@ def main():
             features, wordcount = fe.extract(content)
             doc_meta['word_num'] = wordcount
             good_features = ff.filter(features)
-            vec = FeatureVector(good_features, fm, doc_meta)
+            vec = FeatureVector(good_features, fm)
             pc.add_vector(vec)
         pc.compute_matrix()
         pc.dump_matrix()
