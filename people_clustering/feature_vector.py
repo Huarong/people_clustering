@@ -8,6 +8,7 @@ Construct a feature space vector and compute the similarity matrix.
 import os
 import math
 import time
+import json
 
 import util
 
@@ -16,7 +17,6 @@ class PersonCorpus(object):
     def __init__(self, name):
         self.name = name
         self.vectors = []
-        self.word_num = 0
         self.feature_freq = {}
         self.corpus_vector_num = 0
         self.corpus_feature_appear_vec_num = {}
@@ -29,7 +29,6 @@ class PersonCorpus(object):
         self.corpus_vector_num += 1
         vec.set_id(len(self.vectors))
         self.vectors.append(vec)
-        self.word_num += vec.get_word_num()
         self.update_freq(vec.freq)
 
     def complete_TFIDF(self):
@@ -105,22 +104,20 @@ class FeatureMapper(object):
 
 
 class FeatureVector(object):
-    def __init__(self, features, feature_mapper, doc_meta):
+    def __init__(self, features, feature_mapper):
         self.feature_mapper = feature_mapper
         self.features = None
         self.vector = None
         self.freq = {}
+        self.largest_feature_count = 0
         self.id = None
         self.tfidf = None
-        self.word_num = doc_meta['word_num']
         self.features_to_vector(features)
+
 
     def set_id(self, _id):
         self.id = _id
         return None
-
-    def get_word_num(self):
-        return self.word_num
 
     def features_to_vector(self, features):
         """
@@ -129,6 +126,7 @@ class FeatureVector(object):
         """
         vector = []
         fmapper = self.feature_mapper
+        largest_feature_count = 0
         for fn, fv in features.items():
             f_no = fmapper.get(fn)
             if f_no is None:
@@ -136,6 +134,10 @@ class FeatureVector(object):
             vector.append((f_no, fv))
             self.freq[f_no] = fv
 
+            if fv > largest_feature_count:
+                largest_feature_count = fv
+
+        self.largest_feature_count = largest_feature_count
         vector.sort()
         self.vector = vector
         return None
@@ -179,7 +181,33 @@ class FeatureVector(object):
         """
         self.tfidf = {}
         for w in self.freq:
-            self.tfidf[w] = (self.freq[w] / float(self.word_num)) * \
+            self.tfidf[w] = (self.freq[w] / float(self.largest_feature_count)) * \
                 (math.log(corpus_vector_num /
                  float(corpus_feature_appear_vec_num[w]) + 1, 10))
         return None
+
+
+def main():
+    feature_dir = os.path.join(util.ROOT, 'pickle/selected_features/')
+    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
+    if not os.path.exists(matrix_dir):
+        os.makedirs(matrix_dir)
+
+    for file_name in os.listdir(feature_dir):
+        name = file_name.split('.')[0]
+        feature_path = os.path.join(feature_dir, file_name)
+        with open(feature_path) as fp:
+            feature_dict = json.load(fp)
+        pc = PersonCorpus(name)
+        fm = FeatureMapper()
+        for rank, feat in feature_dict.items():
+            vec = FeatureVector(feat, fm)
+            pc.add_vector(vec)
+        pc.compute_matrix()
+        matrix_path = os.path.join(matrix_dir, '%s.matrix' % name)
+        pc.dump_matrix(path=matrix_path)
+    return None
+
+
+if __name__ == '__main__':
+    main()
