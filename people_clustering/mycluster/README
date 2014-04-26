@@ -1,0 +1,6 @@
+# 无法改变 demo 的输出：
+	删除 __init__.py 重建空的 __init__.py
+
+	删除所有 from nltk.cluster import ... 改为： import ...
+
+	注意 demo 中是否有 from nltk.cluster import ..
