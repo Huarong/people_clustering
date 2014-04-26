@@ -33,7 +33,6 @@ def main():
         category_path = os.path.join(category_dir, '%s.pickle' % name)
         with open(category_path, 'wb') as fp:
             pickle.dump(result, fp)
-        break
     return None
 
 
