@@ -13,7 +13,8 @@ import util
 
 
 class PersonCorpus(object):
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.vectors = []
         self.word_num = 0
         self.feature_freq = {}
@@ -28,7 +29,7 @@ class PersonCorpus(object):
         self.corpus_vector_num += 1
         vec.set_id(len(self.vectors))
         self.vectors.append(vec)
-        self.word_num += vec.word_num()
+        self.word_num += vec.get_word_num()
         self.update_freq(vec.freq)
 
     def complete_TFIDF(self):
@@ -43,8 +44,8 @@ class PersonCorpus(object):
 
     def update_freq(self, freq):
         for k, v in freq.items():
-            self.feature_freq[k] += self.feature_freq.get(k, 0) + v
-            self.corpus_feature_appear_vec_num[k] += self.feature_freq.get(k, 0) + 1
+            self.feature_freq[k] = self.feature_freq.get(k, 0) + v
+            self.corpus_feature_appear_vec_num[k] = self.corpus_feature_appear_vec_num.get(k, 0) + 1
         return None
 
     def compute_matrix(self):
@@ -53,14 +54,17 @@ class PersonCorpus(object):
         if not self.is_tfidf:
             self.complete_TFIDF()
 
-        matrix = [[0.0] for i in range(len(self.feature_freq)) for j in range(len(self.vectors))]
-        li = len(matrix)
+        li = len(self.vectors)
+        lj = len(self.feature_freq)
+        matrix = [[0.0 for j in range(lj)] for i in range(li)]
         for i in range(li):
             vec = self.vectors[i]
             tfidf = vec.tfidf
             for f_no, fv in tfidf.items():
                 matrix[i][f_no] = fv
         self.matrix = matrix
+        print 'Finish computing matrix %s' % self.name
+        print 'The matrix is %d * %d' % (li, lj)
         return None
 
     def get_matrix(self):
@@ -71,11 +75,11 @@ class PersonCorpus(object):
             tmp_path = os.path.join(util.ROOT, 'tmp')
             if not os.path.exists(tmp_path):
                 os.mkdir(tmp_path)
-            path = os.path.join(tmp_path, '%d.matrix' % int(time.time()))
+            path = os.path.join(tmp_path, '%s.matrix' % self.name)
 
         with open(path, 'wb') as out:
             for row in self.matrix:
-                out.write(' '.join(row))
+                out.write(' '.join([str(e) for e in row]))
                 out.write(os.linesep)
         print 'Finish writing matrix to %s' % path
         return None
@@ -105,17 +109,17 @@ class FeatureVector(object):
         self.feature_mapper = feature_mapper
         self.features = None
         self.vector = None
-        self.features_to_vector(features)
-        self.word_num = doc_meta['word_num']
-        self.freq = None
+        self.freq = {}
         self.id = None
         self.tfidf = None
+        self.word_num = doc_meta['word_num']
+        self.features_to_vector(features)
 
     def set_id(self, _id):
         self.id = _id
         return None
 
-    def word_num(self):
+    def get_word_num(self):
         return self.word_num
 
     def features_to_vector(self, features):
@@ -129,7 +133,7 @@ class FeatureVector(object):
             f_no = fmapper.get(fn)
             if f_no is None:
                 f_no = fmapper.add(fn)
-            vector.append(f_no, fv)
+            vector.append((f_no, fv))
             self.freq[f_no] = fv
 
         vector.sort()

@@ -1,0 +1,60 @@
+INFO:TextExtract:begin extract body text of Louis_Sidoti
+INFO:TextExtract:begin extract body text of Martin_Nagel
+INFO:TextExtract:begin extract body text of Tim_Whisler
+INFO:TextExtract:begin extract body text of Patrick_Karlsson
+INFO:TextExtract:begin extract body text of Christine_Borgman
+INFO:TextExtract:file path not exist: /home/hhr/myapps/people_clustering/data/weps2007_data_1.1/traininig/web_pages/Christine_Borgman/raw/029/index.html
+INFO:TextExtract:file path not exist: /home/hhr/myapps/people_clustering/data/weps2007_data_1.1/traininig/web_pages/Christine_Borgman/raw/061/index.html
+INFO:TextExtract:file path not exist: /home/hhr/myapps/people_clustering/data/weps2007_data_1.1/traininig/web_pages/Christine_Borgman/raw/007/index.html
+INFO:TextExtract:begin extract body text of Hannah_Bassham
+INFO:TextExtract:begin extract body text of Michael_Howard
+INFO:TextExtract:begin extract body text of Sidney_Shorter
+INFO:TextExtract:begin extract body text of Todd_Platts
+INFO:TextExtract:begin extract body text of Young_Dawkins
+INFO:TextExtract:begin extract body text of Allan_Hanbury
+INFO:TextExtract:begin extract body text of Cathie_Ely
+INFO:TextExtract:begin extract body text of Mary_Lemanski
+INFO:TextExtract:begin extract body text of Miranda_Bollinger
+INFO:TextExtract:begin extract body text of Stacey_Doughty
+INFO:TextExtract:begin extract body text of Alexander_Markham
+INFO:TextExtract:begin extract body text of Luke_Choi
+INFO:TextExtract:begin extract body text of Maile_Doyle
+INFO:TextExtract:begin extract body text of Alice_Gilbreath
+INFO:TextExtract:begin extract body text of Roy_Tamashiro
+INFO:TextExtract:begin extract body text of Helen_Cawthorne
+INFO:TextExtract:begin extract body text of Tony_Abbott
+INFO:TextExtract:begin extract body text of Anita_Coleman
+INFO:TextExtract:begin extract body text of Gillian_Symons
+INFO:TextExtract:begin extract body text of John_Kennedy
+INFO:TextExtract:begin extract body text of Paul_Collins
+INFO:TextExtract:begin extract body text of Elmo_Hardy
+INFO:TextExtract:begin extract body text of Gregory_Crane
+INFO:TextExtract:begin extract body text of Thomas_Baker
+INFO:TextExtract:begin extract body text of Alexander_Macomb
+ERROR:root:error getting summary: 
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/readability/readability.py", line 168, in summary
+    html_partial=html_partial)
+  File "/usr/local/lib/python2.7/dist-packages/readability/readability.py", line 214, in get_article
+    for sibling in best_elem.getparent().getchildren():
+AttributeError: 'NoneType' object has no attribute 'getchildren'
+INFO:TextExtract:extract summary failed: /home/hhr/myapps/people_clustering/data/weps2007_data_1.1/traininig/web_pages/Alexander_Macomb/raw/030/index.html
+INFO:TextExtract:begin extract body text of Edward_Fox
+INFO:TextExtract:begin extract body text of Paul_Clough
+INFO:TextExtract:begin extract body text of Pam_Tetu
+INFO:TextExtract:begin extract body text of Ione_Westover
+INFO:TextExtract:begin extract body text of George_Clinton
+INFO:TextExtract:begin extract body text of Charlotte_Bergeron
+INFO:TextExtract:begin extract body text of Guy_Dunbar
+INFO:TextExtract:begin extract body text of Gregory_Brennan
+INFO:TextExtract:begin extract body text of David_Lodge
+INFO:TextExtract:begin extract body text of Donna_Harman
+INFO:TextExtract:begin extract body text of Alfred_Schroeder
+INFO:TextExtract:begin extract body text of Abby_Watkins
+INFO:TextExtract:begin extract body text of Dan_Rhone
+INFO:TextExtract:begin extract body text of Armando_Valencia
+INFO:TextExtract:begin extract body text of Jane_Hunter
+INFO:TextExtract:begin extract body text of Celeste_Paquette
+INFO:TextExtract:begin extract body text of Guy_Crider
+INFO:TextExtract:begin extract body text of Andrew_Powell
+INFO:TextExtract:begin extract body text of Cynthia_Voigt

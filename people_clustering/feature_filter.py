@@ -14,4 +14,4 @@ class FeatureFilter(object):
         if func is None:
             func = lambda x: x[1]
         large = heapq.nlargest(self.threshold, features.items(), key=func)
-        return large
+        return dict(large)
