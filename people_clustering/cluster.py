@@ -12,7 +12,7 @@ from people_clustering.mycluster.gaac import GAAClusterer
 
 
 def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/svd_matrix/')
+    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
     category_dir = os.path.join(util.ROOT, 'pickle/category/')
     if not os.path.exists(category_dir):
         os.makedirs(category_dir)
@@ -25,14 +25,14 @@ def main():
         print 'begin %s: %s' % (count, name)
         file_path = os.path.join(matrix_dir, file_name)
         matrix = util.load_matrix(file_path)
-        print '--------------'
-        print len(matrix)
         np_matrix = [np.array(row) for row in matrix]
         print np_matrix
         result = clusterer.cluster(np_matrix, False, "euc", "mean")
         category_path = os.path.join(category_dir, '%s.pickle' % name)
         with open(category_path, 'wb') as fp:
             pickle.dump(result, fp)
+        if count > 5:
+            break
     return None
 
 
