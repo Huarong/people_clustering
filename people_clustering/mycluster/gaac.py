@@ -31,6 +31,11 @@ class GAAClusterer(VectorSpaceClusterer):
 
     def cluster(self, vectors, assign_clusters=False, DisType='cos',Stype='avg',trace=False):
         # stores the merge order
+
+        #-------------------------------------------------
+        self._distMap.clear()   # 每次聚类不同样本之前必须更新
+        #-------------------------------------------------
+
         l = len(vectors)
         if('cos'==DisType):
             for i in range(l):
@@ -43,19 +48,32 @@ class GAAClusterer(VectorSpaceClusterer):
         self._dendrogram = Dendrogram(
             [numpy.array(vector, numpy.float64) for vector in vectors])
         result = VectorSpaceClusterer.cluster(self, vectors, assign_clusters, Stype, trace)
-        print result
+
         return result
 
     def cluster_vectorspace(self, vectors, Stype, trace=False):
         # create a cluster for each vector
         l = len(vectors)
+
+        #-----------------------------------------------------
+        results = []        # 记录自底向上每层分类的结果
+        ADs = []            # 记录每层的 AD 值
+        #-----------------------------------------------------
+
         clusters = [[i] for i in range(l)]
+
+        #-----------------------------------------------------
+        #----------------------- 初始化 -----------------------
+        result = [(i,) for i in range(l)]
+        AD = self._All_Dis(clusters)
+        results.append(result)
+        ADs.append(AD)
+        #-----------------------------------------------------
+
 
         # the sum vectors
         vector_sum = copy.copy(vectors)                 # 元素为 numpy.array()
-
-        ADs = []
-        results = []                        # 记录自底向上每层分类的结果
+                     
         while len(clusters) > max(self._num_clusters, 1):
             # find the two best candidate clusters to merge, based on their
             # S(union c_i, c_j)
@@ -88,24 +106,22 @@ class GAAClusterer(VectorSpaceClusterer):
             del vector_sum[j]
 
             self._dendrogram.merge(i, j)
-            print clusters
 
             AD = self._All_Dis(clusters)
-            print AD
             ADs.append(AD)
 
             result = []
             for i in range(l):
                 for j,c in enumerate(clusters):
                     if i in c:
-                        result.append(j)
+                        result.append((j,))
             # print result
             # print "*"*10
             results.append(result)
 
-        if(1==self._num_clusters):
-            ADs.append(0)
-            results.append([0])
+        # if(1==self._num_clusters):
+        #     ADs.append(0)
+        #     results.append([(0,)])
 
         l_ADs = len(ADs)
         minAD = ADs[0]
@@ -229,9 +245,14 @@ class GAAClusterer(VectorSpaceClusterer):
                     if(x>y):
                         Inner += self._distMap[(y,x)]
                     elif(x<y):
-                        Inner += self._distMap[(x,y)]      
+                        Inner += self._distMap[(x,y)]  
+        print "Cluster number = ",l    
         print "Inner:",Inner,"Inter:",Inter
-        return (Inner+Inter)*l
+        AD = (Inner+Inter)*l
+        print 'AD = ',AD
+        # print "Clusters : ",clusters          # 太长，输出很慢
+        print ""
+        return AD
     #//////////////////////////////////////////////////////////////////////////////////
 
     def __repr__(self):
@@ -240,7 +261,7 @@ class GAAClusterer(VectorSpaceClusterer):
 
     #///////////////// 根据二维的样本点，和聚类结果，绘出结果散点图 /////////////////////////
     def draw_2D(self,vectors, result):
-        import pylab as pl
+        import matplotlib.pyplot as pl
         rList =list(set(result)) 
         l = len(rList)
         Xs = []
@@ -260,12 +281,27 @@ class GAAClusterer(VectorSpaceClusterer):
             if (vector[1]>maxY):
                 maxY = vector[1]
 
-        types = ['or','og','ob','oy','oc','ok','om','ow','^r','^g','^b','^y','^c','^k','^m','^w']
+        types = ['or','og','ob','oy','oc','ok','om','ow','^r','^g','^b','^y','^c','^k','^m','^w',\
+        'xr','xg','xb','xy','xc','xk','xm','xw','sr','sg','sb','sy','sc','sk','sm','sw']
         for i in range(l):
             pl.plot(Xs[i],Ys[i],types[i])
         pl.xlim(-1,maxX+1)
         pl.ylim(-1,maxY+1)
         pl.show()
+
+        # for vector in vectors:
+        #     Xs.append(vector[0])
+        #     if (vector[0]>maxX):
+        #         maxX = vector[0]
+        #     Ys.append(vector[1])
+        #     if (vector[1]>maxY):
+        #         maxY = vector[1]
+        # sizes = [20]*len(result)
+        # pl.scatter(Xs,Ys,s=sizes,c=result)
+        # pl.xlim(-1,maxX+1)
+        # pl.ylim(-1,maxY+1)
+        # pl.show()
+ 
     #/////////////////////////////////////////////////////////////////////////////
 
 
@@ -274,8 +310,8 @@ class GAAClusterer(VectorSpaceClusterer):
 #/////////////////////////////////////////////////////////////////////////////////
 '''                                 测试部分                                    '''
 #/////////////////////////////////////////////////////////////////////////////////
-'''   半随机生成 n 个二维点样本， 大致属于 m 个类  '''
-def rand_2D_vector(n,m):
+'''   半随机生成 n 个二维点样本， 属于 m 个类, 类以方格交替分布 '''
+def rand_2D_vector_rect(n,m):
 
     import random
     ms = numpy.sqrt(2*m)
@@ -286,8 +322,12 @@ def rand_2D_vector(n,m):
 
     tmp = []
     count = 0
-    c = n/(2*ms)
-    w = n/ms
+    c = int(n/m)
+    if(c < float(n)/m): # 向上取整（没格的元素个数）
+        c += 1
+
+    w = n/(2*ms)
+    # cNum = 0
     for i in range(ms):
         for j in range(ms):
             if((i%2)==(j%2)):
@@ -295,32 +335,95 @@ def rand_2D_vector(n,m):
                 pj0 = j*w
                 pi1 = (i+1)*w
                 pj1 = (j+1)*w
-                for k in range(c):
+                ccount = 0
+                while ccount<c:
                     x = random.randint(pi0, pi1)
                     y = random.randint(pj0, pj1)
                     tu = (x,y)
                     if(tu not in tmp):
                         tmp.append(tu)
                         count += 1
+                        ccount += 1
                         if(n==count):
-                            break
+                            return tmp
+                # cNum += 1
+                # if(m==cNum):
+                #     return tmp
+    return tmp
+
+'''   半随机生成大 n 个二维点样本， 属于 m 个类, 类以套环交替分布 '''
+def rand_2D_vector_circle(n,m):
+
+    import random
+    cX = (2*m - 1)*10
+    cY = (2*m - 1)*10
+
+    total = 0
+    for i in range(1,m+1):
+        total += ((2*i-1)*(2*i-1))-((2*i-2)*(2*i-2))
+
+    tmp = []
+    count = 0
+    for j in range(1,m+1):
+        c = ((2*j-1)*(2*j-1))-((2*j-2)*(2*j-2))
+        t = float(c)*n/total
+        c = int (c*n/total)
+        if(c<t):    # 向上取整
+            c += 1
+
+        Llimit = cX - (2*j-1)*10
+        Hlimit = cX + (2*j-1)*10
+
+        UP = ((2*j-1)*10)*((2*j-1)*10)
+        DOWN = ((2*j-2)*10)*((2*j-2)*10)
+
+        ccount = 0
+        while ccount<c:
+            x = random.randint(Llimit,Hlimit)
+            y = random.randint(Llimit,Hlimit)
+            r = (x-cX)*(x-cX)+(y-cY)*(y-cY)
+
+            if (r<=UP and r>=DOWN):
+                tu = (x,y)
+                if(tu not in tmp):
+                    tmp.append(tu)
+                    count += 1
+
+                    ccount += 1
+                    # print count
+                    if(n==count):
+                        print "over"
+                        return tmp 
     return tmp
 
 
-
-'''    实例： 生成 250 个一个随机二维样本，大致属于 8 个类    '''
+'''    实例： (1) 生成 250 个半随机二维样本，大致属于 8 个类    
+             (2) 生成 100 个半随机二维样本，大致属于 4 各类
+'''
 def demo():
 
-    # tmpV = rand_2D_vector(250,8)
-    tmpV = [(5,6)]
+    tmpV1 = rand_2D_vector_rect(120,5)
+    tmpV2 = rand_2D_vector_rect(100,3)
 
-    vectors = [numpy.array(f) for f in tmpV]
+    # tmpV = [(5,6),(5,7),(6,6),(6,7)]
+
+    # tmpV3 = rand_2D_vector_circle(600,2)
+    # result3 = []
+    # for i in range(len(tmpV3)):
+    #     result3.append(i)
+    # # result3 =[0]*len(tmpV3)
+
+    vectors1 = [numpy.array(f) for f in tmpV1]
+    vectors2 = [numpy.array(f) for f in tmpV2]
+    # vectors3 = [numpy.array(f) for f in tmpV3]
 
     clusterer = GAAClusterer(1)                 # 限定最少类的个数
-    result = clusterer.cluster(vectors, False,"euc", "mean")    # 返回聚类结果列表
-
-    clusterer.draw_2D(vectors, result)          # 绘制分类后的二维图
-
+    result1 = clusterer.cluster(vectors1, False,"euc", "mean")    # 返回聚类结果列表
+    result2 = clusterer.cluster(vectors2, False,"euc", "mean")
+    # result3 = clusterer.cluster(vectors3, False,"euc", "min")
+    clusterer.draw_2D(vectors1, [i[0] for i in result1])          # 绘制分类后的二维图
+    clusterer.draw_2D(vectors2, [i[0] for i in result2]) 
+    # clusterer.draw_2D(tmpV3, result3)
 
 if __name__ == '__main__':
     demo()
