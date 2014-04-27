@@ -19,7 +19,8 @@ class PeopleSet(object):
     def gather_entity(self):
         entities = defaultdict(list)
         for i, e in enumerate(self.category):
-            entities[e].append(i)
+            for ei in e:
+                entities[ei].append(i)
         self.entities = entities
 
     def dump_xml(self, path):
@@ -36,14 +37,15 @@ class PeopleSet(object):
 
 def main():
     category_dir = os.path.join(util.ROOT, 'pickle/category/')
-    clustering_result_dir = os.path.join(util.ROOT, 'result/')
-    if not os.path.exists(category_dir):
-        os.makedirs(category_dir)
+    clustering_result_dir = os.path.join(util.ROOT, 'result/myresult/')
+    if not os.path.exists(clustering_result_dir):
+        os.makedirs(clustering_result_dir)
 
     for file_name in os.listdir(category_dir):
         name = file_name.split('.')[0]
         category_path = os.path.join(category_dir, file_name)
-        category = pickle.load(category_path)
+        with open(category_path) as f:
+            category = pickle.load(f)
         ps = PeopleSet(name, category)
         clustering_result_path = os.path.join(clustering_result_dir, '%s.xml' % name)
         ps.dump_xml(clustering_result_path)

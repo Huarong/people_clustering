@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import time
 import logging
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print ROOT
+
+sys.path.insert(0, ROOT)
 
 
 def init_log(logname, filename, level=logging.DEBUG, console=True):
@@ -49,3 +51,21 @@ def timer(func, logger=None):
             print infomation
         return None
     return wrapper
+
+
+def load_matrix(path):
+    matrix = []
+    with open(path) as f:
+        for line in f.readlines():
+            row = [float(e) for e in line.split()]
+            matrix.append(row)
+    return matrix
+
+
+def dump_matrix(matrix, path):
+    with open(path, 'wb') as out:
+        for row in matrix:
+            out.write(' '.join([str(e) for e in row]))
+            out.write(os.linesep)
+    print 'Finish writing matrix to %s' % path
+    return None
