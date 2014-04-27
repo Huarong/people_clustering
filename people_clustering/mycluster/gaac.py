@@ -402,28 +402,28 @@ def rand_2D_vector_circle(n,m):
 '''
 def demo():
 
-    tmpV1 = rand_2D_vector_rect(120,5)
-    tmpV2 = rand_2D_vector_rect(100,3)
+    # tmpV1 = rand_2D_vector_rect(120,5)
+    # tmpV2 = rand_2D_vector_rect(100,3)
 
     # tmpV = [(5,6),(5,7),(6,6),(6,7)]
 
-    # tmpV3 = rand_2D_vector_circle(600,2)
+    tmpV3 = rand_2D_vector_circle(400,2)
     # result3 = []
     # for i in range(len(tmpV3)):
     #     result3.append(i)
     # # result3 =[0]*len(tmpV3)
 
-    vectors1 = [numpy.array(f) for f in tmpV1]
-    vectors2 = [numpy.array(f) for f in tmpV2]
-    # vectors3 = [numpy.array(f) for f in tmpV3]
+    # vectors1 = [numpy.array(f) for f in tmpV1]
+    # vectors2 = [numpy.array(f) for f in tmpV2]
+    vectors3 = [numpy.array(f) for f in tmpV3]
 
     clusterer = GAAClusterer(1)                 # 限定最少类的个数
-    result1 = clusterer.cluster(vectors1, False,"euc", "mean")    # 返回聚类结果列表
-    result2 = clusterer.cluster(vectors2, False,"euc", "mean")
-    # result3 = clusterer.cluster(vectors3, False,"euc", "min")
-    clusterer.draw_2D(vectors1, [i[0] for i in result1])          # 绘制分类后的二维图
-    clusterer.draw_2D(vectors2, [i[0] for i in result2]) 
-    # clusterer.draw_2D(tmpV3, result3)
+    # result1 = clusterer.cluster(vectors1, False,"euc", "mean")    # 返回聚类结果列表
+    # result2 = clusterer.cluster(vectors2, False,"euc", "mean")
+    result3 = clusterer.cluster(vectors3, False,"euc", "min")
+    # clusterer.draw_2D(vectors1, [i[0] for i in result1])          # 绘制分类后的二维图
+    # clusterer.draw_2D(vectors2, [i[0] for i in result2]) 
+    clusterer.draw_2D(tmpV3, result3)
 
 if __name__ == '__main__':
     demo()
