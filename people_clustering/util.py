@@ -56,6 +56,16 @@ def timer(func, logger=None):
 def load_matrix(path):
     matrix = []
     with open(path) as f:
-        row = [float(e) for e in f.readline().split()]
-        matrix.append(row)
+        for line in f.readlines():
+            row = [float(e) for e in line.split()]
+            matrix.append(row)
     return matrix
+
+
+def dump_matrix(matrix, path):
+    with open(path, 'wb') as out:
+        for row in matrix:
+            out.write(' '.join([str(e) for e in row]))
+            out.write(os.linesep)
+    print 'Finish writing matrix to %s' % path
+    return None
