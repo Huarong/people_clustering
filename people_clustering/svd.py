@@ -45,22 +45,6 @@ def test_get_topicMatrix():
     print tm
 
 
-def load_matrix(path):
-    matrix = []
-    with open(path) as f:
-        row = [float(e) for e in f.readline().split()]
-        matrix.append(row)
-    return matrix
-
-def dump_matrix(matrix, path):
-    with open(path, 'wb') as out:
-        for row in matrix:
-            out.write(' '.join([str(e) for e in row]))
-            out.write(os.linesep)
-    print 'Finish writing matrix to %s' % path
-    return None
-
-
 def main():
     matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
     svd_dir = os.path.join(util.ROOT, 'pickle/svd_matrix/')
@@ -70,10 +54,10 @@ def main():
     for file_name in os.listdir(matrix_dir):
         name = file_name.split('.')[0]
         matrix_path = os.path.join(matrix_dir, file_name)
-        matrix = load_matrix(matrix_path)
+        matrix = util.load_matrix(matrix_path)
         svd_matrix = get_topicMatrix(np.array(matrix), len(matrix))
         svd_path = os.path.join(svd_dir, '%s.matrix' % name)
-        dump_matrix(svd_matrix, svd_path)
+        util.dump_matrix(svd_matrix, svd_path)
     return None
 
 
