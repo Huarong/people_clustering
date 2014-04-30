@@ -60,9 +60,7 @@ def cosine(matrix):
     return sim_matrix
 
 
-def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/svd_matrix/')
-    cosine_dir = os.path.join(util.ROOT, 'pickle/cosine/')
+def run(matrix_dir, cosine_dir):
     if not os.path.exists(cosine_dir):
         os.makedirs(cosine_dir)
 
@@ -77,6 +75,14 @@ def main():
         cosine_path = os.path.join(cosine_dir, '%s.matrix' % name)
         util.dump_matrix(sim_matrix, cosine_path)
     return None
+
+
+def main():
+    matrix_dir = util.abs_path('pickle/2008test/svd_matrix')
+    cosine_dir = util.abs_path('pickle/2008test/cosine/')
+    run(matrix_dir, cosine_dir)
+    return None
+
 
 
 if __name__ == '__main__':

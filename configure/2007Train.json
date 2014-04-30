@@ -1,0 +1,16 @@
+{
+    "log_path": "log/2007train.log",
+    "webpages_dir": "data/weps2007_data_1.1/traininig/web_pages",
+    "mapped_webpages_dir": "pickle/2007train/mapped_webpages_dir/",
+    "id_mapper_pickle_dir": "pickle/2007train/id_mapper/",
+    "metadata_dir": "ddata/weps2007_data_1.1/traininig/description_files",
+    "body_text_dir": "pickle/2007train/bodytext/",
+    "feature_dir": "pickle/2007train/features/",
+    "selected_feature_dir": "pickle/2007train/selected_features/",
+    "matrix_dir": "pickle/2007train/matrix/",
+    "svd_matrix_dir": "pickle/2007train/svd_matrix/",
+    "cosine_dir": "pickle/2007train/cosine/",
+    "louvain_category_dir": "pickle/2007train/louvain_category/",
+    "before_map_back_result_dir": "pickle/2007train/before_map_back_result/louvain",
+    "result_dir": "pickle/2007train/result/louvain"
+}

@@ -33,18 +33,18 @@ class Louvain(object):
         return category
 
 
-def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/cosine/')
+def run(cosine_dir, category_dir):
+    cosine_dir = os.path.join(util.ROOT, 'pickle/cosine/')
     category_dir = os.path.join(util.ROOT, 'pickle/category/')
     if not os.path.exists(category_dir):
         os.makedirs(category_dir)
 
     count = 0
-    for file_name in os.listdir(matrix_dir):
+    for file_name in os.listdir(cosine_dir):
         name = file_name.split('.')[0]
         count += 1
         print 'begin %s: %s' % (count, name)
-        file_path = os.path.join(matrix_dir, file_name)
+        file_path = os.path.join(cosine_dir, file_name)
         lou = Louvain()
         lou.load_graph(file_path)
         try:
@@ -58,6 +58,13 @@ def main():
             pickle.dump(category, fp)
         # if count > 2:
         #     break
+    return None
+
+
+def main():
+    cosine_dir = util.abs_path('pickle/2008test/cosine/')
+    category_dir = util.abs_path('pickle/2008test/category/')
+    run(cosine_dir, category_dir)
     return None
 
 

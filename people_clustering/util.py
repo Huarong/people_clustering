@@ -5,6 +5,8 @@ import os
 import sys
 import time
 import logging
+import pickle
+import json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -69,3 +71,31 @@ def dump_matrix(matrix, path):
             out.write(os.linesep)
     print 'Finish writing matrix to %s' % path
     return None
+
+
+def pickle_me(obj, path, typ=None):
+    with open(path, 'wb') as f:
+        if typ == 'json':
+            json.dump(obj, f)
+        else:
+            pickle.dump(obj, f)
+    return None
+
+
+def load_pickle(path, typ=None):
+    with open(path, 'wb') as f:
+        if typ == 'json':
+            return json.load(f)
+        else:
+            return pickle.load(f)
+
+
+def makedir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return None
+
+
+def abs_path(path):
+    global ROOT
+    return os.path.join(ROOT, path)

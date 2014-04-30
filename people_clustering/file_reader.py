@@ -8,7 +8,8 @@ from lxml import etree
 
 
 class FileReader(object):
-    def __init__(self, webpages_dir, name):
+    def __init__(self, metadata_dir, webpages_dir, name):
+        self.metadata_dir = metadata_dir
         self.webpages_dir = webpages_dir
         self.description = {}
         self.name = name
@@ -21,7 +22,7 @@ class FileReader(object):
         return None
 
     def read_description(self):
-        xml_path = os.path.join(self.webpages_dir, self.name, '%s.xml' % self.name)
+        xml_path = os.path.join(self.metadata_dir, '%s.xml' % self.name)
         with open(xml_path) as page:
             root = etree.XML(page.read())
             docs = root.xpath('./doc')

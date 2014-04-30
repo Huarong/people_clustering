@@ -103,14 +103,12 @@ class TestFilter(unittest.TestCase):
         # self.assertEqual("abcd", "abcf")
 
 
-def main():
+def run(body_text_dir, feature_dir):
     flt = FeatureExtractor()
-    text_dir = os.path.join(util.ROOT, 'data/bodytext/')
-    feature_dir = os.path.join(util.ROOT, 'pickle/features/')
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
-    for name in os.listdir(text_dir):
-        name_dir = os.path.join(text_dir, name)
+    for name in os.listdir(body_text_dir):
+        name_dir = os.path.join(body_text_dir, name)
         features = {}
         print 'begin %s' % name
         for rank_file_name in os.listdir(name_dir):
@@ -122,6 +120,13 @@ def main():
         features_pickle_path = os.path.join(feature_dir, '%s.json' % name)
         with open(features_pickle_path, 'wb') as fp:
             json.dump(features, fp)
+    return None
+
+
+def main():
+    body_text_dir = os.path.join(util.ROOT, 'pickle/2008train/bodytext/')
+    feature_dir = os.path.join(util.ROOT, 'pickle/2008train/features/')
+    run(body_text_dir, feature_dir)
     return None
 
 

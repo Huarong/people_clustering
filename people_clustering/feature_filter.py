@@ -33,10 +33,8 @@ class FeatureFilter(object):
         return None
 
 
-def main():
+def run(feature_dir, selected_feature_dir):
     ff = FeatureFilter()
-    feature_dir = os.path.join(util.ROOT, 'pickle/features/')
-    selected_feature_dir = os.path.join(util.ROOT, 'pickle/selected_features/')
     if not os.path.exists(selected_feature_dir):
         os.makedirs(selected_feature_dir)
 
@@ -45,6 +43,13 @@ def main():
         feature_path = os.path.join(feature_dir, name)
         selected_path = os.path.join(selected_feature_dir, name)
         ff.filter_and_dump(feature_path, selected_path)
+    return None
+
+
+def main():
+    feature_dir = util.abs_path('pickle/2008test/features/')
+    selected_feature_dir = util.abs_path('pickle/2008test/selected_features/')
+    run(feature_dir, selected_feature_dir)
     return None
 
 

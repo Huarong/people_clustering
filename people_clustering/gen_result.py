@@ -36,11 +36,11 @@ class PeopleSet(object):
         return None
 
 
-def main():
+def run(category_dir, result_dir):
     category_dir = os.path.join(util.ROOT, 'pickle/category/')
-    clustering_result_dir = os.path.join(util.ROOT, 'result/myresult/nineH')
-    if not os.path.exists(clustering_result_dir):
-        os.makedirs(clustering_result_dir)
+    result_dir = os.path.join(util.ROOT, 'result/myresult/nineH')
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     for file_name in os.listdir(category_dir):
         name = file_name.split('.')[0]
@@ -48,9 +48,16 @@ def main():
         with open(category_path) as f:
             category = pickle.load(f)
         ps = PeopleSet(name, category)
-        clustering_result_path = os.path.join(clustering_result_dir, '%s.clust.xml' % name)
+        clustering_result_path = os.path.join(result_dir, '%s.clust.xml' % name)
         ps.dump_xml(clustering_result_path)
         del ps
+    return None
+
+
+def main():
+    category_dir = util.abs_path('pickle/2008test/louvain_category/')
+    result_dir = util.abs_path('pickle/2008test/result/louvain')
+    run(category_dir, result_dir)
     return None
 
 
