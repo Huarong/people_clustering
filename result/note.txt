@@ -1,0 +1,20 @@
+Without SVD
+
+topic   BEP BER FMeasure_0.2_BEP-BER    FMeasure_0.2_P-IP   FMeasure_0.5_BEP-BER    FMeasure_0.5_P-IP   IP  P   
+
+ALL_IN_ONE_BASELINE 0,43    1,0 0,66    0,79    0,53    0,67    1,0 0,56    
+COMBINED_BASELINE   0,43    1,0 0,65    0,94    0,52    0,87    1,0 0,78    
+ONE_IN_ONE_BASELINE 1,0 0,24    0,27    0,27    0,34    0,34    0,24    1,0 
+louvain 1,0 0,27    0,27    0,34    0,34    0,24    1,0 
+nltk    0,54    0,57    0,51    0,65    0,49    0,63    0,69    0,64    
+
+
+With SVD
+
+topic   BEP BER FMeasure_0.2_BEP-BER    FMeasure_0.2_P-IP   FMeasure_0.5_BEP-BER    FMeasure_0.5_P-IP   IP  P   
+
+ALL_IN_ONE_BASELINE 0,43    1,0 0,66    0,79    0,53    0,67    1,0 0,56    
+COMBINED_BASELINE   0,43    1,0 0,65    0,94    0,52    0,87    1,0 0,78    
+ONE_IN_ONE_BASELINE 1,0 0,24    0,27    0,27    0,34    0,34    0,24    1,0 
+louvain 1,0 0,27    0,27    0,34    0,34    0,24    1,0 
+nltk    0,59    0,68    0,62    0,75    0,58    0,71    0,8 0,68    

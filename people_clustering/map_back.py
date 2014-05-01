@@ -22,7 +22,6 @@ class BackMapper(object):
 
     def read_mapper(self):
         path = os.path.join(self.inverted_mapper_dir, '%s.inv.pickle' % self.name)
-        print path
         try:
             self.inverted_id_mapper_list = util.load_pickle(path)
         except EOFError, e:
@@ -35,12 +34,14 @@ class BackMapper(object):
         path = os.path.join(self.before_map_back_result_dir, '%s.%s' % (self.name, self.result_file_extension))
         with open(path) as f:
             root = etree.XML(f.read())
-        entities = root.xpath('./entity')
+        entities = root.xpath('./entity') + root.xpath('./discarded')
         for entity in entities:
             for doc in entity:
                 rank = doc.get('rank')
                 real_rank = self.inverted_id_mapper_list[int(rank)]
-                doc.set('rank', str(real_rank))
+                # remove the heading zero in rank like 012 ==> 12
+                real_rank = str(int(real_rank))
+                doc.set('rank', real_rank)
 
         xml = etree.ElementTree(root)
         out_path = os.path.join(self.result_dir, '%s.%s' % (self.name, self.result_file_extension))

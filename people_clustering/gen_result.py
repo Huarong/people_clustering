@@ -29,7 +29,11 @@ class PeopleSet(object):
         clustering = etree.Element('clustering', name=name)
         xml = etree.ElementTree(clustering)
         for entity_id, doc_ranks in self.entities.items():
-            entity_element = etree.SubElement(clustering, 'entity', id=str(entity_id))
+            assert type(entity_id) == int
+            if entity_id == 9999:
+                entity_element = etree.SubElement(clustering, 'discarded')
+            else:
+                entity_element = etree.SubElement(clustering, 'entity', id=str(entity_id))
             for rank in doc_ranks:
                 doc_element = etree.SubElement(entity_element, 'doc', rank=str(rank))
         with open(path, 'wb') as out:
