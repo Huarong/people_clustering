@@ -24,7 +24,8 @@ class PeopleSet(object):
         self.entities = entities
 
     def dump_xml(self, path):
-        clustering = etree.Element('clustering', name=self.name)
+        name = self.name.replace('_', ' ')
+        clustering = etree.Element('clustering', name=name)
         xml = etree.ElementTree(clustering)
         for entity_id, doc_ranks in self.entities.items():
             entity_element = etree.SubElement(clustering, 'entity', id=str(entity_id))
@@ -34,12 +35,9 @@ class PeopleSet(object):
             xml.write(out, xml_declaration=True, encoding='utf-8')
         return None
 
+def run(category_dir, result_dir, config):
+    result_file_extension = config["result_file_extension"]
 
-def main():
-    category_dir = os.path.join(util.ROOT, 'pickle/category/')
-    clustering_result_dir = os.path.join(util.ROOT, 'result/myresult/horton')
-    if not os.path.exists(clustering_result_dir):
-        os.makedirs(clustering_result_dir)
 
     for file_name in os.listdir(category_dir):
         name = file_name.split('.')[0]
@@ -47,9 +45,20 @@ def main():
         with open(category_path) as f:
             category = pickle.load(f)
         ps = PeopleSet(name, category)
+
         clustering_result_path = os.path.join(clustering_result_dir, '%s.clust.xml' % name)
+
+        clustering_result_path = os.path.join(result_dir, '%s.%s' % (name, result_file_extension))
+
         ps.dump_xml(clustering_result_path)
         del ps
+    return None
+
+
+def main():
+    category_dir = util.abs_path('pickle/2008test/louvain_category/')
+    result_dir = util.abs_path('pickle/2008test/result/louvain')
+    run(category_dir, result_dir)
     return None
 
 

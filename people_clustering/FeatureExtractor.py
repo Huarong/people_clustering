@@ -20,7 +20,7 @@ class FeatureExtractor(object):
         super(FeatureExtractor, self).__init__()
         self.__init_tools()
         self.stops = []
-        self.stopword_path = '../dict/stopword.txt'
+        self.stopword_path = os.path.join(util.ROOT, 'dict/stopword.txt')
         self.load_stops()
 
     def __init_tools(self):
@@ -103,15 +103,13 @@ class TestFilter(unittest.TestCase):
         # self.assertEqual("abcd", "abcf")
 
 
-def main():
+def run(body_text_dir, feature_dir):
     flt = FeatureExtractor()
-    text_dir = os.path.join(util.ROOT, 'data/bodytext/')
-    feature_dir = os.path.join(util.ROOT, 'pickle/features/')
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
     c = 0
-    for name in os.listdir(text_dir):
-        name_dir = os.path.join(text_dir, name)
+    for name in os.listdir(body_text_dir):
+        name_dir = os.path.join(body_text_dir, name)
         features = {}
         print 'begin %s' % name
         for rank_file_name in os.listdir(name_dir):
@@ -126,6 +124,13 @@ def main():
         c += 1
         if(c==3):
             break
+    return None
+
+
+def main():
+    body_text_dir = os.path.join(util.ROOT, 'pickle/2008train/bodytext/')
+    feature_dir = os.path.join(util.ROOT, 'pickle/2008train/features/')
+    run(body_text_dir, feature_dir)
     return None
 
 

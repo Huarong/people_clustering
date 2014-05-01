@@ -45,19 +45,24 @@ def test_get_topicMatrix():
     print tm
 
 
-def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
-    svd_dir = os.path.join(util.ROOT, 'pickle/svd_matrix/')
-    if not os.path.exists(svd_dir):
-        os.makedirs(svd_dir)
+def run(matrix_dir, svd_matrix_dir):
+    if not os.path.exists(svd_matrix_dir):
+        os.makedirs(svd_matrix_dir)
 
     for file_name in os.listdir(matrix_dir):
         name = file_name.split('.')[0]
         matrix_path = os.path.join(matrix_dir, file_name)
         matrix = util.load_matrix(matrix_path)
         svd_matrix = get_topicMatrix(np.array(matrix), len(matrix))
-        svd_path = os.path.join(svd_dir, '%s.matrix' % name)
+        svd_path = os.path.join(svd_matrix_dir, '%s.matrix' % name)
         util.dump_matrix(svd_matrix, svd_path)
+    return None
+
+
+def main():
+    matrix_dir = util.abs_path('pickle/2008test/matrix/')
+    svd_matrix_dir = util.abs_path('pickle/2008test/svd_matrix/')
+    run(matrix_dir, svd_matrix_dir)
     return None
 
 

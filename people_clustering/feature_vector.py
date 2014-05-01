@@ -187,9 +187,8 @@ class FeatureVector(object):
         return None
 
 
-def main():
-    feature_dir = os.path.join(util.ROOT, 'pickle/selected_features/')
-    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
+def run(selected_feature_dir, matrix_dir):
+    feature_dir = selected_feature_dir
     if not os.path.exists(matrix_dir):
         os.makedirs(matrix_dir)
 
@@ -206,6 +205,13 @@ def main():
         pc.compute_matrix()
         matrix_path = os.path.join(matrix_dir, '%s.matrix' % name)
         pc.dump_matrix(path=matrix_path)
+    return None
+
+
+def main():
+    selected_feature_dir = util.abs_path('pickle/2008test/selected_features/')
+    matrix_dir = util.abs_path('pickle/2008test/matrix/')
+    run(selected_feature_dir, matrix_dir)
     return None
 
 
