@@ -52,7 +52,7 @@ def eval_2008test():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    cmd = 'java -jar %s %s %s %s %s -P -IP -FMeasure_0.5_P-IP -FMeasure_0.2_P-IP -FMeasure_0.5_BEP-BER -FMeasure_0.2_BEP-BER -BEP -OneInOne -AllInOne -Combined  -overwrite -average' % (jar_path, metadata_path, truth_files_dir, my_result_dir, output_dir)
+    cmd = 'java -jar %s %s %s %s %s -P -IP -FMeasure_0.5_P-IP -FMeasure_0.2_P-IP -FMeasure_0.5_BEP-BER -FMeasure_0.2_BEP-BER -BEP -BER -OneInOne -AllInOne -Combined  -overwrite -average' % (jar_path, metadata_path, truth_files_dir, my_result_dir, output_dir)
 
     cmd_list = cmd.split()
 
