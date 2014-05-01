@@ -1,0 +1,25 @@
+
+1. 	AD_Cluster:	min, change_point[0]	(类数量最多  change point)
+	DeNoise:	m=1, low = 0,1,2
+
+	result:		horton	0,75	0,5	0,52	0,53	0,59	0,58	
+
+2.	AD_Cluster:	min, min_change_point	(类数量<=最多情况)
+	DeNoise:	m=1, low = 0,1,2
+
+	result:		horton	0,75	0,5	[0,51]	0,53	0,59	0,58
+
+3.	AD_Cluster:	mean, min_change_point	(类数量<=最多情况)
+	DeNoise:	m=1, low = 0,1,2
+
+	result:		horton	0,75	0,5	0,52	0,53	0,59	0,58
+
+4.	AD_Cluster:	mean, min_change_point	(类数量多的 change point)
+	DeNoise:	m=1, low = 0,1,2
+
+	result:		horton	0,75	0,5	[0,53]	0,53	0,59	0,58
+
+4.	AD_Cluster:	mean, min_change_point	(类数量多的 change point)
+	DeNoise:	m=1, low = 0,1,2
+
+	result:		horton	0,78	0,46	0,52	0,53	0,55	0,59	

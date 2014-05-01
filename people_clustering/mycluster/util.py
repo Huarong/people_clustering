@@ -130,7 +130,14 @@ def cosine_distance(u, v):      # cos():为相似性， 1-cos():为相似性距�
     Returns 1 minus the cosine of the angle between vectors v and u. This is equal to
     1 - (u.v / |u||v|).
     """
-    return 1 - (numpy.dot(u, v) / (sqrt(numpy.dot(u, u)) * sqrt(numpy.dot(v, v))))
+    su = sum(u)
+    sv = sum(v)
+    if (0==su and 0==sv):
+        return 0
+    elif (0==su or 0==sv):
+        return 1
+    else:
+        return 1 - (numpy.dot(u, v) / (sqrt(numpy.dot(u, u)) * sqrt(numpy.dot(v, v))))
 
 
 

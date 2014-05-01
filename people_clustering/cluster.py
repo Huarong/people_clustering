@@ -31,8 +31,8 @@ def main():
         category_path = os.path.join(category_dir, '%s.pickle' % name)
         with open(category_path, 'wb') as fp:
             pickle.dump(result, fp)
-        if count > 5:
-            break
+        # if count > 5:
+        #     break
     return None
 
 

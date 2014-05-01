@@ -109,6 +109,7 @@ def main():
     feature_dir = os.path.join(util.ROOT, 'pickle/features/')
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
+    c = 0
     for name in os.listdir(text_dir):
         name_dir = os.path.join(text_dir, name)
         features = {}
@@ -122,6 +123,9 @@ def main():
         features_pickle_path = os.path.join(feature_dir, '%s.json' % name)
         with open(features_pickle_path, 'wb') as fp:
             json.dump(features, fp)
+        c += 1
+        if(c==3):
+            break
     return None
 
 

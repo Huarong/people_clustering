@@ -47,7 +47,7 @@ class GAAClusterer(VectorSpaceClusterer):
                     self._distMap[(i,j)] = euclidean_distance(vectors[i], vectors[j])
         self._dendrogram = Dendrogram(
             [numpy.array(vector, numpy.float64) for vector in vectors])
-        result = VectorSpaceClusterer.cluster(self, vectors, assign_clusters, Stype, trace)
+        result = VectorSpaceClusterer.cluster(self, vectors,assign_clusters, Stype, trace)
 
         return result
 
@@ -226,6 +226,7 @@ class GAAClusterer(VectorSpaceClusterer):
     #/////////////////// 自定义每层 AD 值，用于确定要返回聚类层 /////////////////////
     def _All_Dis(self,clusters):
         l = len(clusters)
+
         Inter = 0
         Inner = 0
 
@@ -233,7 +234,7 @@ class GAAClusterer(VectorSpaceClusterer):
         for i in range(l):
             for j in range(i+1,l):
                 for x in clusters[i]:
-                    Inter += self._mean_similarity(clusters[i],clusters[j])
+                    Inter += self._min_similarity(clusters[i],clusters[j])#*(len(clusters[i])+len(clusters[j]))
 
         #/////// distance sum between between every tow points in a class ////
         for i in range(l):
@@ -248,6 +249,9 @@ class GAAClusterer(VectorSpaceClusterer):
                         Inner += self._distMap[(x,y)]  
         print "Cluster number = ",l    
         print "Inner:",Inner,"Inter:",Inter
+
+        if (1==l):          # 惩罚只分一类的情况，使其与不分类的效果一样
+            l = len(clusters[0])
         AD = (Inner+Inter)*l
         print 'AD = ',AD
         # print "Clusters : ",clusters          # 太长，输出很慢
@@ -402,28 +406,28 @@ def rand_2D_vector_circle(n,m):
 '''
 def demo():
 
-    # tmpV1 = rand_2D_vector_rect(120,5)
-    # tmpV2 = rand_2D_vector_rect(100,3)
+    tmpV1 = rand_2D_vector_rect(120,5)
+    tmpV2 = rand_2D_vector_rect(100,3)
 
     # tmpV = [(5,6),(5,7),(6,6),(6,7)]
 
-    tmpV3 = rand_2D_vector_circle(400,2)
+    # tmpV3 = rand_2D_vector_circle(200,1)
     # result3 = []
     # for i in range(len(tmpV3)):
     #     result3.append(i)
     # # result3 =[0]*len(tmpV3)
 
-    # vectors1 = [numpy.array(f) for f in tmpV1]
-    # vectors2 = [numpy.array(f) for f in tmpV2]
-    vectors3 = [numpy.array(f) for f in tmpV3]
+    vectors1 = [numpy.array(f) for f in tmpV1]
+    vectors2 = [numpy.array(f) for f in tmpV2]
+    # vectors3 = [numpy.array(f) for f in tmpV3]
 
     clusterer = GAAClusterer(1)                 # 限定最少类的个数
-    # result1 = clusterer.cluster(vectors1, False,"euc", "mean")    # 返回聚类结果列表
-    # result2 = clusterer.cluster(vectors2, False,"euc", "mean")
-    result3 = clusterer.cluster(vectors3, False,"euc", "min")
-    # clusterer.draw_2D(vectors1, [i[0] for i in result1])          # 绘制分类后的二维图
-    # clusterer.draw_2D(vectors2, [i[0] for i in result2]) 
-    clusterer.draw_2D(tmpV3, result3)
+    result1 = clusterer.cluster(vectors1, False,"euc", "mean")    # 返回聚类结果列表
+    result2 = clusterer.cluster(vectors2, False,"euc", "mean")
+    # result3 = clusterer.cluster(vectors3, False,"cos", "min")
+    clusterer.draw_2D(vectors1, [i for i in result1])          # 绘制分类后的二维图
+    clusterer.draw_2D(vectors2, [i for i in result2]) 
+    # clusterer.draw_2D(tmpV3, result3)
 
 if __name__ == '__main__':
     demo()
