@@ -10,7 +10,7 @@
     "feature_dir": "pickle/2008test/features/",
     "selected_feature_dir": "pickle/2008test/selected_features/",
     "matrix_dir": "pickle/2008test/matrix/",
-    "is_svd": false,
+    "is_svd": true,
     "svd_matrix_dir": "pickle/2008test/svd_matrix/",
     "cosine_dir": "pickle/2008test/cosine/",
     "category_dir": "pickle/2008test/category/nltk",

@@ -9,7 +9,7 @@ import util
 
 
 class FeatureFilter(object):
-    def __init__(self, threshold=100):
+    def __init__(self, threshold=500):
         self.threshold = threshold
 
     def filter(self, features, func=None):

@@ -1,6 +1,7 @@
 #coding:utf-8
 
 import os
+import re
 import json
 import unittest
 from collections import defaultdict
@@ -18,10 +19,11 @@ class FeatureExtractor(object):
     """
     def __init__(self):
         super(FeatureExtractor, self).__init__()
-        self.__init_tools()
-        self.stops = []
+        # self.__init_tools()
+        self.stops = set()
         self.stopword_path = os.path.join(util.ROOT, 'dict/stopword.txt')
         self.load_stops()
+        self.tag_list = set(['NN', 'JJ', 'VB'])
 
     def __init_tools(self):
         test = "Just a test not for printing out or other use "
@@ -31,8 +33,7 @@ class FeatureExtractor(object):
 
     def load_stops(self):
         with open(self.stopword_path) as f:
-            stopSet = set([line.strip() for line in f.readlines()])
-            self.stops.extend(list(stopSet))
+            self.stops = set([line.strip() for line in f])
 
     def tag_convert(self,tag):
         if('NN'==tag):
@@ -68,41 +69,82 @@ class FeatureExtractor(object):
                 meanList.append(SynList[i].name)
         return meanList
 
+    def is_name_in_text(self, name, text):
+        name_list = name.lower().split('_')
+        lower_text = text.lower()
+        sents = segmenter(lower_text)
+        word_set = set()
+        for sent in sents:
+            tokens = tokenizer(sent)
+            for t in tokens:
+                word_set.add(t)
+        for e in name_list:
+            if e in word_set:
+                return True
+        return False
 
-    def extract(self, text, limit=1,tagList=['NN','VB','VBD']):
+
+    def extract(self, name, text, limit=1, is_wordnet=False):
+        if not self.is_name_in_text(name, text):
+            return {}, 0
+        tagList = self.tag_list
+        stopwords = self.stops
+        wordDict = {}
+        filterd_dict = {}
         sents = segmenter(text)
-        tokens = []
         wordcount = 0
         for sent in sents:
-            tokens.extend(tokenizer(sent))
-        tagTube = tagger(tokens)
+            tokens = tokenizer(sent)
+            terms = tagger(tokens)
+            for t in terms:
+                wordcount += 1
+                key = '.'.join(t)
+                try:
+                    wordDict[key] += 1
+                except KeyError:
+                    wordDict[key] = 1
 
-        wordDict = {}
-        for term in tagTube:
-            wordcount += 1
-            if term[1] in tagList and term[0] not in self.stops:
-                meanList = self.abstract(term[0],term[1],limit)
-                for w in meanList:
-                    wordDict[w] = wordDict.get(w,0) + 1
+        for term_s, count in wordDict.items():
+            splited = term_s.split('.')
+            pos = splited[-1]
+            if pos[:2] in tagList:
+                word = splited[0]
+                if word not in stopwords:
+                    if is_wordnet:
+                        meanList = self.abstract(word, pos, limit)
+                        for w in meanList:
+                            filterd_dict[term_s] = count
+                    else:
+                        filterd_dict[term_s] = count
 
-        return wordDict,wordcount
+        return filterd_dict, wordcount
 
 
 class TestFilter(unittest.TestCase):
     def test_filt(self):
         flt = FeatureExtractor()
         text = """This is a book about computer. If you like this book, I would give it to you.
-        Do you like this book?
+        Do you like this book? It is a beautiful book.
         """
-        target = {'computer.n.01': 1, 'book.n.01': 3, 'give.v.01': 1}
-        wordDict, count = flt.extract(text,1)
-        print count
-        self.assertDictEqual(target, wordDict)
-        # print filt(text)
+        # with wordnet
+        # target = {'computer.n.01': 1, 'book.n.01': 4, 'beautiful.a.01': 1, 'give.v.01': 1}
+        # without wordnet
+        target = {'Do.NNP': 1, 'book.NN': 4, 'like.VBP': 1, 'give.VB': 1, 'beautiful.JJ': 1, 'computer.NN': 1}
+        filtered_dict, count = flt.extract('book', text)
+        print filtered_dict
+        self.assertDictEqual(target, filtered_dict)
 
-        # self.assertEqual("abcd", "abcf")
+        text = """This is why we fought for health care reform. Read their stories.
+        "You and I, as citizens, have the power to set this country's course."
+        """
+        target = {'set.VB': 1, 'Read.NNP': 1, 'fought.VBD': 1, 'course.NN': 1, 'citizens.NNS': 1, 'care.NN': 1, 'country.NN': 1, 'health.NN': 1, 'power.NN': 1, 'reform.NN': 1, 'stories.NNS': 1}
+        filtered_dict, count = flt.extract('huo', text)
+        print filtered_dict
+        target = {}
+        self.assertDictEqual(target, filtered_dict)
 
 
+@util.timer
 def run(body_text_dir, feature_dir):
     flt = FeatureExtractor()
     if not os.path.exists(feature_dir):
@@ -117,13 +159,13 @@ def run(body_text_dir, feature_dir):
             print 'start %s' % rank_file_name
             with open(os.path.join(name_dir, rank_file_name)) as rank_file:
                 text = rank_file.read()
-                features[rank] = flt.extract(text)
+                features[rank] = flt.extract(name, text)
         features_pickle_path = os.path.join(feature_dir, '%s.json' % name)
         with open(features_pickle_path, 'wb') as fp:
             json.dump(features, fp)
-        c += 1
-        if(c==3):
-            break
+        # c += 1
+        # if(c==1):
+        #     break
     return None
 
 
@@ -135,5 +177,5 @@ def main():
 
 
 if __name__ =="__main__":
-    # unittest.main()
-    main()
+    unittest.main()
+    # main()
