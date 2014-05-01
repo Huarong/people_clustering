@@ -18,13 +18,13 @@ import subprocess
 def run():
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    jar_path = os.path.join(ROOT, 'data/weps-2/data/test/scorer_1.2/wepsEvaluation.jar')
+    jar_path = os.path.join(ROOT, 'data/weps-2/data/test/scorer_1.2/wepsScorer.jar')
 
     metadata_path = os.path.join(ROOT, 'data/weps-2/data/test/metadata/')
 
     truth_files_dir = os.path.join(ROOT, 'data/weps-2/data/test/gold_standard/')
 
-    my_result_dir = os.path.join(ROOT, 'result/htest/')
+    my_result_dir = os.path.join(ROOT, 'pickle/2008test/result/')
     if not os.path.exists(my_result_dir):
         os.makedirs(my_result_dir)
 

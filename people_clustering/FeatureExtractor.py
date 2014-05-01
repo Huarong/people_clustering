@@ -20,7 +20,7 @@ class FeatureExtractor(object):
         super(FeatureExtractor, self).__init__()
         self.__init_tools()
         self.stops = []
-        self.stopword_path = '../dict/stopword.txt'
+        self.stopword_path = os.path.join(util.ROOT, 'dict/stopword.txt')
         self.load_stops()
 
     def __init_tools(self):

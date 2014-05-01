@@ -46,8 +46,6 @@ def test_get_topicMatrix():
 
 
 def run(matrix_dir, svd_matrix_dir):
-    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
-    svd_matrix_dir = os.path.join(util.ROOT, 'pickle/svd_matrix/')
     if not os.path.exists(svd_matrix_dir):
         os.makedirs(svd_matrix_dir)
 

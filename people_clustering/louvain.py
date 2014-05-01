@@ -34,8 +34,6 @@ class Louvain(object):
 
 
 def run(cosine_dir, category_dir):
-    cosine_dir = os.path.join(util.ROOT, 'pickle/cosine/')
-    category_dir = os.path.join(util.ROOT, 'pickle/category/')
     if not os.path.exists(category_dir):
         os.makedirs(category_dir)
 
@@ -50,8 +48,9 @@ def run(cosine_dir, category_dir):
         try:
             category = lou.cluster()
             del lou
-        except:
-            print '------------- %s ----------' % name
+        except Exception, e:
+            print e
+            print 'Fail clustering ### %s ###' % name
             continue
         category_path = os.path.join(category_dir, '%s.pickle' % name)
         with open(category_path, 'wb') as fp:

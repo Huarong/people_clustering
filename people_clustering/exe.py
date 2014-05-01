@@ -4,7 +4,6 @@
 import os
 import json
 import argparse
-from collections import OrderedDict
 
 import util
 import map_doc_id
@@ -24,7 +23,7 @@ class Task(object):
         self.CONFIG = config
         self.fill_abs_path()
 
-    
+
     def fill_abs_path(self):
         config = {}
         for k, v in self.CONFIG.items():
@@ -64,7 +63,7 @@ class Task(object):
         config = self.CONFIG
         body_text_dir = config['body_text_dir']
         feature_dir = config['feature_dir']
-        print 'begin run feature extractor.'
+        print 'begin run feature extractor from %s' % body_text_dir
         print 'Save features to %s' % feature_dir
         FeatureExtractor.run(body_text_dir, feature_dir)
         print 'finish save features to %s' % feature_dir
@@ -74,7 +73,7 @@ class Task(object):
         config = self.CONFIG
         feature_dir = config['feature_dir']
         selected_feature_dir = config['selected_feature_dir']
-        print 'begin run feature filter.'
+        print 'begin run feature filter from %s' % feature_dir
         print 'save selected features to %s' % selected_feature_dir
         feature_filter.run(feature_dir, selected_feature_dir)
         print 'finish save selected features to %s' % selected_feature_dir
@@ -92,6 +91,10 @@ class Task(object):
 
     def run_svd(self):
         config = self.CONFIG
+        is_svd = config.get('is_svd')
+        if not is_svd:
+            '!!!!!!!!!!!! configure says no need for SVD !!!!!!!!!!!!!!!!!'
+            return None
         matrix_dir = config['matrix_dir']
         svd_matrix_dir = config['svd_matrix_dir']
         print 'begin run SVD from %s' % matrix_dir
@@ -100,9 +103,10 @@ class Task(object):
         print 'finish save svd matrix to %s' % svd_matrix_dir
         return None
 
-    def run_consine(self, svd=True):
+    def run_consine(self):
         config = self.CONFIG
-        if svd:
+        is_svd = config.get('is_svd')
+        if is_svd:
             matrix_dir = config['svd_matrix_dir']
         else:
             matrix_dir = config['matrix_dir']
@@ -113,14 +117,18 @@ class Task(object):
         print 'finish save cosine similarity to %s' % cosine_dir
         return None
 
-    def run_louvain(self):
+    def run_cluster(self):
         config = self.CONFIG
         cosine_dir = config['cosine_dir']
-        louvain_category_dir = config['louvain_category_dir']
-        print 'begin run louvain method from %s' % cosine_dir
-        print 'save to %s' % louvain_category_dir
-        louvain.run(cosine_dir, louvain_category_dir)
-        print 'finish save louvain category to %s' % louvain_category_dir
+        cluster_method = config.get('cluster_method')
+        if 'louvain' == cluster_method:
+            louvain_category_dir = config['category_dir']
+            print 'begin run louvain method from %s' % cosine_dir
+            print 'save to %s' % louvain_category_dir
+            louvain.run(cosine_dir, louvain_category_dir)
+            print 'finish save louvain category to %s' % louvain_category_dir
+        else:
+            print '!!!!!!!!!!!!!! unknow cluster method !!!!!!!!!!!!!!!!!!!'
         return None
 
     def run_gen_result(self):
@@ -129,7 +137,7 @@ class Task(object):
         before_map_back_result_dir = config['before_map_back_result_dir']
         print 'begin generating results from %s' % category_dir
         print 'save to %s' % before_map_back_result_dir
-        gen_result.run(category_dir, before_map_back_result_dir)
+        gen_result.run(category_dir, before_map_back_result_dir, config)
         print 'finish save results to %s' % before_map_back_result_dir
         return None
 
@@ -140,11 +148,11 @@ class Task(object):
         result_dir = config['result_dir']
         print 'begin map back from %s' % before_map_back_result_dir
         print 'save to %s' % result_dir
-        map_back.run(inverted_mapper_dir, before_map_back_result_dir, result_dir)
+        map_back.run(inverted_mapper_dir, before_map_back_result_dir, result_dir, config)
         print 'finish save results to %s' % result_dir
         return None
 
-    def run(self, step=1):
+    def run(self, begin=1, end=1):
         processes_dict = {
             1: self.run_map_doc_id,
             2: self.run_text_extraction,
@@ -153,13 +161,13 @@ class Task(object):
             5: self.run_feature_vector,
             6: self.run_svd,
             7: self.run_consine,
-            8: self.run_louvain,
+            8: self.run_cluster,
             9: self.run_gen_result,
             10: self.run_map_back
         }
         processes = sorted(processes_dict.items())
         for no, func in processes:
-            if step <= no:
+            if begin <= no <= end:
                 func()
         return None
 
@@ -167,18 +175,21 @@ class Task(object):
 def parse_cmd_args():
     parser = argparse.ArgumentParser(description='Execute a people clustering task')
     parser.add_argument('configure', help='The config path')
-    parser.add_argument('-s', '--step', type=int, default=1, help='The process step to begin')
+    parser.add_argument('-b', '--begin', type=int, default=1, help='The process step to begin')
+    parser.add_argument('-e', '--end', type=int, default=1, help='The process step to end')
     args = parser.parse_args()
     config_path = os.path.abspath(args.configure)
-    return config_path
+    begin = args.begin
+    end = args.end
+    return config_path, begin, end
 
 
 def main():
-    config_path = parse_cmd_args()
+    config_path, begin, end = parse_cmd_args()
     with open(config_path) as cf:
         config = json.load(cf)
     t = Task(config)
-    t.run()
+    t.run(begin, end)
 
 
 if __name__ == '__main__':

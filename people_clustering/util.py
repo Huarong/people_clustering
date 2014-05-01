@@ -83,7 +83,7 @@ def pickle_me(obj, path, typ=None):
 
 
 def load_pickle(path, typ=None):
-    with open(path, 'wb') as f:
+    with open(path) as f:
         if typ == 'json':
             return json.load(f)
         else:
