@@ -12,9 +12,8 @@ from people_clustering.mycluster_nltk.AD_Cluster import AD_Cluster
 from people_clustering.mycluster_nltk.DeNoise import cutNoise
 
 
-def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
-    category_dir = os.path.join(util.ROOT, 'pickle/category/')
+def run(matrix_dir, category_dir):
+
     if not os.path.exists(category_dir):
         os.makedirs(category_dir)
 
@@ -55,6 +54,13 @@ def main():
 
         # if count > 5:
         #      break
+    return None
+
+
+def main():
+    matrix_dir = os.path.join(util.ROOT, 'pickle/2008test/matrix/')
+    category_dir = os.path.join(util.ROOT, 'pickle/2008test/category/nltk')
+    run(matrix_dir, category_dir)
     return None
 
 

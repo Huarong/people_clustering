@@ -1,7 +1,7 @@
 {
     "version": "2008test",
-    "cluster_method": "louvain",
-    "log_path": "log/2008test.log",
+    "cluster_method": "nltk",
+    "log_path": "log/2008test.nltk.log",
     "webpages_dir": "data/weps-2/data/test/web_pages",
     "mapped_webpages_dir": "pickle/2008test/mapped_webpages_dir/",
     "id_mapper_pickle_dir": "pickle/2008test/id_mapper/",
@@ -10,11 +10,11 @@
     "feature_dir": "pickle/2008test/features/",
     "selected_feature_dir": "pickle/2008test/selected_features/",
     "matrix_dir": "pickle/2008test/matrix/",
-    "is_svd": false,
+    "is_svd": true,
     "svd_matrix_dir": "pickle/2008test/svd_matrix/",
     "cosine_dir": "pickle/2008test/cosine/",
-    "category_dir": "pickle/2008test/louvain_category/",
-    "before_map_back_result_dir": "pickle/2008test/before_map_back_result/louvain",
-    "result_dir": "pickle/2008test/result/louvain",
+    "category_dir": "pickle/2008test/category/nltk",
+    "before_map_back_result_dir": "pickle/2008test/before_map_back_result/nltk",
+    "result_dir": "pickle/2008test/result/nltk",
     "result_file_extension": "xml"
 }

@@ -113,7 +113,7 @@ class AD_Cluster(VectorSpaceClusterer):
                         result.append((j,))
             results.append(result)
 
-        draw_line(ADs)
+        # draw_line(ADs)
         #////////////////////////// 找 AD 最小点处结果返回 /////////////////////////
         l_ADs = len(ADs)
         minAD = ADs[0]

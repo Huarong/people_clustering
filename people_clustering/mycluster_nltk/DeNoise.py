@@ -83,8 +83,8 @@ def cutNoise(matrix):
     while  end>=0:
         Dlist.append(ADist[end][1])
         end -= 1
-    print Dlist
-    draw_line(Dlist)
+    # print Dlist
+    # draw_line(Dlist)
 
     tmp, angles, part = min_Angle_part(Dlist)    # 注意 Dlist 里面应该是从小到大的顺序
     print part

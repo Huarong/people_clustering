@@ -11,9 +11,7 @@ import util
 from people_clustering.mycluster.gaac import GAAClusterer
 
 
-def main():
-    matrix_dir = os.path.join(util.ROOT, 'pickle/matrix/')
-    category_dir = os.path.join(util.ROOT, 'pickle/category/')
+def run(matrix_dir, category_dir):
     if not os.path.exists(category_dir):
         os.makedirs(category_dir)
 
@@ -31,8 +29,13 @@ def main():
         category_path = os.path.join(category_dir, '%s.pickle' % name)
         with open(category_path, 'wb') as fp:
             pickle.dump(result, fp)
-        # if count > 5:
-        #     break
+    return None
+
+
+def main():
+    matrix_dir = os.path.join(util.ROOT, 'pickle/2008test/matrix/')
+    category_dir = os.path.join(util.ROOT, 'pickle/2008test/category/nltk')
+    run(matrix_dir, category_dir)
     return None
 
 

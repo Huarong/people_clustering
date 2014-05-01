@@ -9,6 +9,7 @@ from lxml import etree
 
 import util
 
+
 class PeopleSet(object):
     def __init__(self, name, category):
         self.name = name
@@ -45,8 +46,6 @@ def run(category_dir, result_dir, config):
         with open(category_path) as f:
             category = pickle.load(f)
         ps = PeopleSet(name, category)
-
-        clustering_result_path = os.path.join(clustering_result_dir, '%s.clust.xml' % name)
 
         clustering_result_path = os.path.join(result_dir, '%s.%s' % (name, result_file_extension))
 

@@ -14,15 +14,16 @@ import feature_vector
 import svd
 import cosine_similarity
 import louvain
+import cluster_nltk
 import gen_result
 import map_back
+import evaluate
 
 
 class Task(object):
     def __init__(self, config):
         self.CONFIG = config
         self.fill_abs_path()
-
 
     def fill_abs_path(self):
         config = {}
@@ -105,6 +106,10 @@ class Task(object):
 
     def run_consine(self):
         config = self.CONFIG
+        cluster_method = config.get('cluster_method')
+        if 'nltk' == cluster_method:
+            print '!!!!!!!!!!!!!! no need to run cosine for nltk cluster !!!!!!!!!!!!!!!!!!!'
+            return None
         is_svd = config.get('is_svd')
         if is_svd:
             matrix_dir = config['svd_matrix_dir']
@@ -127,6 +132,17 @@ class Task(object):
             print 'save to %s' % louvain_category_dir
             louvain.run(cosine_dir, louvain_category_dir)
             print 'finish save louvain category to %s' % louvain_category_dir
+        elif 'nltk' == cluster_method:
+            category_dir = config['category_dir']
+            is_svd = config.get('is_svd')
+            if is_svd:
+                matrix_dir = config['svd_matrix_dir']
+            else:
+                matrix_dir = config['matrix_dir']
+            print 'begin run nltk method from %s' % matrix_dir
+            print 'save to %s' % category_dir
+            cluster_nltk.run(matrix_dir, category_dir)
+            print 'finish save nltk category to %s' % category_dir
         else:
             print '!!!!!!!!!!!!!! unknow cluster method !!!!!!!!!!!!!!!!!!!'
         return None
@@ -152,6 +168,13 @@ class Task(object):
         print 'finish save results to %s' % result_dir
         return None
 
+    def run_eval(self):
+        config = self.CONFIG
+        version = config['version']
+        evaluate.run(version)
+        return None
+
+
     def run(self, begin=1, end=1):
         processes_dict = {
             1: self.run_map_doc_id,
@@ -163,11 +186,14 @@ class Task(object):
             7: self.run_consine,
             8: self.run_cluster,
             9: self.run_gen_result,
-            10: self.run_map_back
+            10: self.run_map_back,
+            11: self.run_eval
         }
         processes = sorted(processes_dict.items())
         for no, func in processes:
             if begin <= no <= end:
+                print ''
+                print '################### Step: %s ####################' % no
                 func()
         return None
 
