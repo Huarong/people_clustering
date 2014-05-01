@@ -52,9 +52,9 @@ def cutNoise(matrix):
         for j in range(i+1,l):
             distList[i][j] = euclidean_distance(np.array(rest[i]), np.array(rest[j]))
             distList[j][i] = distList[i][j]
-            if(distList[i][j]==0):
-                print i,":",rest[i]
-                print j,":",rest[j]
+            # if(distList[i][j]==0):
+            #     print i,":",rest[i]
+            #     print j,":",rest[j]
     #----------------------------------------------------------------------------------------
     mostSimList = []        # 记录与第 i 个样本第 m 相似的距离
     m = 1
