@@ -99,3 +99,6 @@ def makedir(directory):
 def abs_path(path):
     global ROOT
     return os.path.join(ROOT, path)
+
+def write(s):
+    print s

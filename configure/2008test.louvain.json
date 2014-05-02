@@ -1,7 +1,7 @@
 {
     "version": "2008test",
     "cluster_method": "louvain",
-    "log_path": "log/2008test.log",
+    "log_path": "log/2008test.louvain.log",
     "webpages_dir": "data/weps-2/data/test/web_pages",
     "mapped_webpages_dir": "pickle/2008test/mapped_webpages_dir/",
     "id_mapper_pickle_dir": "pickle/2008test/id_mapper/",
