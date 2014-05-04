@@ -76,7 +76,7 @@ class Task(object):
         selected_feature_dir = config['selected_feature_dir']
         print 'begin run feature filter from %s' % feature_dir
         print 'save selected features to %s' % selected_feature_dir
-        feature_filter.run(feature_dir, selected_feature_dir)
+        feature_filter.run(feature_dir, selected_feature_dir, config)
         print 'finish save selected features to %s' % selected_feature_dir
         return None
 

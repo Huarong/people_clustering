@@ -40,15 +40,14 @@ class PeopleSet(object):
             xml.write(out, xml_declaration=True, encoding='utf-8')
         return None
 
+
 def run(category_dir, result_dir, config):
     result_file_extension = config["result_file_extension"]
-
 
     for file_name in os.listdir(category_dir):
         name = file_name.split('.')[0]
         category_path = os.path.join(category_dir, file_name)
-        with open(category_path) as f:
-            category = pickle.load(f)
+        category = util.load_pickle(category_path)
         ps = PeopleSet(name, category)
 
         clustering_result_path = os.path.join(result_dir, '%s.%s' % (name, result_file_extension))

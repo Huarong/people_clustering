@@ -17,7 +17,6 @@ class BackMapper(object):
         self.result_dir = result_dir
         self.result_file_extension = config['result_file_extension']
         self.inverted_id_mapper_list = []
-        self.read_mapper()
         self.exit = False
 
     def read_mapper(self):
@@ -30,8 +29,9 @@ class BackMapper(object):
             self.exit = True
         return None
 
-    def read_xml(self):
+    def convert(self):
         path = os.path.join(self.before_map_back_result_dir, '%s.%s' % (self.name, self.result_file_extension))
+        print path
         with open(path) as f:
             root = etree.XML(f.read())
         entities = root.xpath('./entity') + root.xpath('./discarded')
@@ -40,7 +40,7 @@ class BackMapper(object):
                 rank = doc.get('rank')
                 real_rank = self.inverted_id_mapper_list[int(rank)]
                 # remove the heading zero in rank like 012 ==> 12
-                real_rank = str(int(real_rank))
+                real_rank = real_rank.lstrip('0')
                 doc.set('rank', real_rank)
 
         xml = etree.ElementTree(root)
@@ -54,7 +54,7 @@ class BackMapper(object):
         if self.exit:
             return None
         else:
-            self.read_xml()
+            self.convert()
         return None
 
 

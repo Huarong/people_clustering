@@ -1,8 +1,14 @@
 Evaluating clustering answers (team louvain) from /home/hhr/myapps/people_clustering/pickle/2008test/result/louvain
 Saving team evaluation to: /home/hhr/myapps/people_clustering/data/weps-2/data/test/scorer_1.2/louvain.eval
 
+Evaluating clustering answers (team louvain_NN) from /home/hhr/myapps/people_clustering/pickle/2008test/result/louvain_NN
+Saving team evaluation to: /home/hhr/myapps/people_clustering/data/weps-2/data/test/scorer_1.2/louvain_NN.eval
+
 Evaluating clustering answers (team nltk) from /home/hhr/myapps/people_clustering/pickle/2008test/result/nltk
 Saving team evaluation to: /home/hhr/myapps/people_clustering/data/weps-2/data/test/scorer_1.2/nltk.eval
+
+Evaluating clustering answers (team nltk_NN) from /home/hhr/myapps/people_clustering/pickle/2008test/result/nltk_NN
+Saving team evaluation to: /home/hhr/myapps/people_clustering/data/weps-2/data/test/scorer_1.2/nltk_NN.eval
 
 Evaluating clustering answers (baseline COMBINED_BASELINE)
 Saving team evaluation to: /home/hhr/myapps/people_clustering/data/weps-2/data/test/scorer_1.2/COMBINED_BASELINE.eval

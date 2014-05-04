@@ -9,16 +9,24 @@ import util
 
 
 class FeatureFilter(object):
-    def __init__(self, threshold=500):
-        self.threshold = threshold
+    def __init__(self, config):
+        self.selected_pos = config['selected_POS']
+        self.threshold = config['feature_threshold']
 
     def filter(self, features, func=None):
         # if features length is not longer than threshold, return all the features
-        if len(features) <= self.threshold:
-            return features
+        selected_pos = self.selected_pos
+        good_features = {}
+        for k, v in features.items():
+            pos = k.split('.')[-1]
+            if pos[:2] in selected_pos:
+                good_features[k] = v
+
+        if len(good_features) <= self.threshold:
+            return good_features
         if func is None:
             func = lambda x: x[1]
-        large = heapq.nlargest(self.threshold, features.items(), key=func)
+        large = heapq.nlargest(self.threshold, good_features.items(), key=func)
         return dict(large)
 
     def filter_and_dump(self, feature_path, selected_path):
@@ -34,8 +42,8 @@ class FeatureFilter(object):
         return None
 
 
-def run(feature_dir, selected_feature_dir):
-    ff = FeatureFilter()
+def run(feature_dir, selected_feature_dir, config):
+    ff = FeatureFilter(config)
     util.makedir(selected_feature_dir)
 
     for name in os.listdir(feature_dir):
