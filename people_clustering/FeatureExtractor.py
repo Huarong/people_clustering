@@ -10,20 +10,28 @@ from nltk import word_tokenize as tokenizer
 from nltk import pos_tag as tagger
 from nltk import sent_tokenize as segmenter
 from nltk.corpus import wordnet as wn
+from nltk import FreqDist
+from lxml import etree
 
 import util
 
+
 class FeatureExtractor(object):
+    email_reg = re.compile(r'[a-zA-Z0-9_.+-]+@(?:[a-zA-Z0-9-]+)(?:\.[a-zA-Z0-9-]+)+')
     """Extract content words from text;
        Abstract word means;
     """
-    def __init__(self):
+    def __init__(self, config):
         super(FeatureExtractor, self).__init__()
         # self.__init_tools()
+        self.metadata_dir = config['metadata_dir']
+        self.id_mapper_pickle_dir = config['id_mapper_pickle_dir']
+        self.config = config
         self.stops = set()
         self.stopword_path = os.path.join(util.ROOT, 'dict/stopword.txt')
         self.load_stops()
-        self.tag_list = set(['NN', 'JJ', 'VB'])
+        # self.tag_list = set(['NN', 'JJ', 'VB'])
+        self.tag_list = set(['NN',])
 
     def __init_tools(self):
         test = "Just a test not for printing out or other use "
@@ -119,10 +127,74 @@ class FeatureExtractor(object):
 
         return filterd_dict, wordcount
 
+    @staticmethod
+    def clean_word(word):
+
+        def is_alpha(c):
+            return c.isalpha()
+
+        return filter(is_alpha, word)
+
+    def title_tokenize(self, title):
+        title = title.lower()
+        title_tokens = [self.clean_word(t) for t in tokenizer(title) if t not in self.stops and len(t) >= 3]
+        title_tokens = [e for e in title_tokens if e]
+        title_freq = dict(FreqDist(title_tokens))
+        return title_freq
+
+    def url_tokenize(self, url):
+        url = url.lower()
+        url_tokens = re.split('[/.]', url)
+        url_tokens = [self.clean_word(t) for t in url_tokens if t and t not in set(['http:', 'https:', 'www', 'html', 'htm', 'shtml'])]
+        url_tokens = [e for e in url_tokens if e]
+        url_freq = dict(FreqDist(url_tokens))
+        return url_freq
+
+    def snippet_tokenize(self, snippet):
+        snippet = snippet.lower()
+        snippet_tokens = [self.clean_word(t) for t in tokenizer(snippet) if t not in self.stops and len(t) >=3 and t != '...']
+        snippet_tokens = [e for e in snippet_tokens if e]
+        snippet_freq = dict(FreqDist(snippet_tokens))
+        return snippet_freq
+
+    def email_detect(self, text):
+        emails = self.email_reg.findall(text)
+        email_freq = dict(FreqDist(emails))
+        return email_freq
+
+    def extra_extract(self, name, name_body_text):
+        id_mapper_path = os.path.join(util.ROOT, self.id_mapper_pickle_dir, '%s.json' % name)
+        id_mapper = util.load_pickle(id_mapper_path, typ='json')
+        extra_features = {}
+        metadata_path = os.path.join(self.metadata_dir, '%s.xml' % name)
+        with open(metadata_path) as f:
+            content = f.read()
+        corpus = etree.XML(content)
+        for doc in corpus:
+            rank = doc.get('rank')
+            mapped_rank = id_mapper[rank]
+            # The description file opposite the snippet and title
+            title = doc.xpath('./snippet')[0].xpath('string()')
+            title_freq = self.title_tokenize(title)
+            url = doc.get('url')
+            url_freq = self.url_tokenize(url)
+            snippet = doc.get('title')
+            snippet_freq = self.snippet_tokenize(snippet)
+            body_text_path = os.path.join(name_body_text, '%s.txt' % mapped_rank)
+            with open(body_text_path) as f:
+                email_freq = self.email_detect(f.read())
+            extra_features[mapped_rank] = {'title': title_freq,
+                                           'url': url_freq,
+                                           'snippet': snippet_freq,
+                                           'emails': email_freq}
+        return extra_features
+
 
 class TestFilter(unittest.TestCase):
     def setUp(self):
-        self.flt = FeatureExtractor()
+        config_path = util.abs_path('configure/2007test.NN.nltk.json')
+        config = util.load_pickle(config_path, typ='json')
+        self.flt = FeatureExtractor(config)
 
     def test_is_name_in_text(self):
         name_list = ['amanda', 'lentz']
@@ -160,12 +232,17 @@ class TestFilter(unittest.TestCase):
         target = {}
         self.assertDictEqual(target, filtered_dict)
 
+    def test_email_detect(self):
+        text = 'My email looks like this: shcd+xsd@scd.com.cn. thank you. And yours is scdc.12@google.com.'
+        target = ['shcd+xsd@scd.com.cn', 'scdc.12@google.com']
+        get = self.flt.email_detect(text)
+        self.assertListEqual(target, get)
+
 
 @util.timer
-def run(body_text_dir, feature_dir):
-    flt = FeatureExtractor()
-    if not os.path.exists(feature_dir):
-        os.makedirs(feature_dir)
+def run(body_text_dir, feature_dir, config):
+    flt = FeatureExtractor(config)
+    util.makedir(feature_dir)
     c = 0
     for name in os.listdir(body_text_dir):
         name_dir = os.path.join(body_text_dir, name)
@@ -181,6 +258,26 @@ def run(body_text_dir, feature_dir):
         features_pickle_path = os.path.join(feature_dir, '%s.json' % name)
         with open(features_pickle_path, 'wb') as fp:
             json.dump(features, fp)
+        # c += 1
+        # if(c==1):
+        #     break
+        break
+    return None
+
+
+@util.timer
+def run_extra(body_text_dir, extra_feature_dir, config):
+    flt = FeatureExtractor(config)
+    util.makedir(extra_feature_dir)
+    c = 0
+    for name in os.listdir(body_text_dir):
+        name_body_dir = os.path.join(body_text_dir, name)
+        extra_features = {}
+        print 'begin %s' % name
+        extra_features = flt.extra_extract(name, name_body_dir)
+        features_pickle_path = os.path.join(extra_feature_dir, '%s.json' % name)
+        with open(features_pickle_path, 'wb') as fp:
+            json.dump(extra_features, fp)
         # c += 1
         # if(c==1):
         #     break

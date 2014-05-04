@@ -25,9 +25,9 @@ def ntlk_extraction(html):
 
 def text_extract(path, logger):
     with open(path) as f:
-        html = f.read().strip().decode('utf-8')
+        html = f.read().strip().decode('utf-8', 'ignore')
         if not html:
-            logger.info('NUll html file')
+            logger.info('NUll html file %s' % path)
             return ''
         # try:
         #     content = readability_extraction(html)

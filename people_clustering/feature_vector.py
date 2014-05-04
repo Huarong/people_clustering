@@ -131,7 +131,24 @@ class FeatureVector(object):
         return None
 
 
-def run(selected_feature_dir, matrix_dir):
+def to_vector(name, feature_dict, matrix_dir):
+    util.makedir(matrix_dir)
+    pc = PersonCorpus(name)
+    fm = FeatureMapper()
+    for rank, feat in feature_dict.items():
+        vec = FeatureVector(rank, feat, fm)
+        pc.add_vector(vec)
+    pc.compute_matrix()
+    matrix_path = os.path.join(matrix_dir, '%s.matrix' % name)
+    pc.dump_matrix(matrix_path)
+    return None
+
+
+def get_extra_feature_class(extra_feature_dict):
+    return extra_feature_dict['0'].keys()
+
+
+def run(selected_feature_dir, extra_feature_dir, matrix_dir):
     feature_dir = selected_feature_dir
     util.makedir(matrix_dir)
 
@@ -139,14 +156,20 @@ def run(selected_feature_dir, matrix_dir):
         name = file_name.split('.')[0]
         feature_path = os.path.join(feature_dir, file_name)
         feature_dict = util.load_pickle(feature_path, typ='json')
-        pc = PersonCorpus(name)
-        fm = FeatureMapper()
-        for rank, feat in feature_dict.items():
-            vec = FeatureVector(rank, feat, fm)
-            pc.add_vector(vec)
-        pc.compute_matrix()
-        matrix_path = os.path.join(matrix_dir, '%s.matrix' % name)
-        pc.dump_matrix(matrix_path)
+        # word features matrix
+        word_matrix_dir = os.path.join(matrix_dir, 'word/')
+        to_vector(name, feature_dict, word_matrix_dir)
+        
+        # extra features matrix
+        extra_feature_path = os.path.join(extra_feature_dir, file_name)
+        print extra_feature_path
+        extra_feature_dict = util.load_pickle(extra_feature_path, typ='json')
+        for cls in get_extra_feature_class(extra_feature_dict):
+            cls_matrix_dir = os.path.join(matrix_dir, cls)
+            cls_feature_dict = {}
+            for rank in extra_feature_dict:
+                cls_feature_dict[rank] = extra_feature_dict[rank][cls]
+            to_vector(name, cls_feature_dict, cls_matrix_dir)
     return None
 
 

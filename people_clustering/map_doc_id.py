@@ -8,8 +8,9 @@ import util
 
 
 class DocidMapper(object):
-    def __init__(self, name, doc_dir, mapped_webpages_dir, id_mapper_pickle_dir,):
+    def __init__(self, name, doc_dir, mapped_webpages_dir, id_mapper_pickle_dir, config):
         self.name = name
+        self.version = config['version']
         self.doc_dir = doc_dir
         self.mapped_webpages_dir = mapped_webpages_dir
         self.id_mapper_pickle_dir = id_mapper_pickle_dir
@@ -22,8 +23,12 @@ class DocidMapper(object):
         id_mapper = self.id_mapper
         util.makedir(mapped_doc_dir)
         for file_name in os.listdir(self.doc_dir):
-            source_path = os.path.join(self.doc_dir, file_name)
-            doc_id = file_name.split('.')[0].lstrip('0')
+            if self.version == '2007test':
+                source_path = os.path.join(self.doc_dir, file_name, 'index.html')
+            elif self.version == '2008test':
+                source_path = os.path.join(self.doc_dir, file_name)
+            print source_path
+            doc_id = file_name.split('.')[0].lstrip('0').zfill(1)
             mapped_doc_id = id_mapper[doc_id]
             mapped_file_name = '%d.html' % mapped_doc_id
             target_path = os.path.join(mapped_doc_dir, mapped_file_name)
@@ -36,7 +41,12 @@ class DocidMapper(object):
         id_mapper_dir = self.id_mapper_pickle_dir
         id_mapper = {}
         for file_name in os.listdir(self.doc_dir):
-            doc_id = file_name.split('.')[0].lstrip('0')
+            if self.version == '2007test':
+                doc_id = file_name.lstrip('0').zfill(1)
+            elif self.version == '2008test':
+                doc_id = file_name.split('.')[0].lstrip('0').zfill(1)
+            else:
+                raise Exception('Invalid version: %s' % self.version)
             id_mapper[doc_id] = len(id_mapper)
         self.id_mapper = id_mapper
 
@@ -54,11 +64,18 @@ class DocidMapper(object):
         self.cp(mapped_doc_dir)
 
 
-def run(webpages_dir, mapped_webpages_dir, id_mapper_pickle_dir):
+def run(webpages_dir, mapped_webpages_dir, id_mapper_pickle_dir, config):
+    version = config['version']
     for name in os.listdir(webpages_dir):
         print '--------------------- %s ---------------' % name
-        doc_dir = os.path.join(webpages_dir, '%s/' % name)
-        dm = DocidMapper(name, doc_dir, mapped_webpages_dir, id_mapper_pickle_dir)
+        if version == '2007test':
+            doc_dir = os.path.join(webpages_dir, '%s/' % name, 'raw')
+        elif version == '2008test':
+            doc_dir = os.path.join(webpages_dir, '%s/' % name)
+        else:
+            raise Exception('Invalid version: %s' % version)
+        print doc_dir
+        dm = DocidMapper(name, doc_dir, mapped_webpages_dir, id_mapper_pickle_dir, config)
         dm.run()
         del dm
     return None

@@ -45,7 +45,7 @@ class Task(object):
         id_mapper_pickle_dir = config['id_mapper_pickle_dir']
         print 'begin run map_doc_id'
         print 'save to %s' % id_mapper_pickle_dir
-        map_doc_id.run(webpages_dir, mapped_webpages_dir, id_mapper_pickle_dir)
+        map_doc_id.run(webpages_dir, mapped_webpages_dir, id_mapper_pickle_dir, config)
         print 'finish'
         return None
 
@@ -70,6 +70,16 @@ class Task(object):
         print 'finish save features to %s' % feature_dir
         return None
 
+    def run_extra_feature_extractor(self):
+        config = self.CONFIG
+        body_text_dir = config['body_text_dir']
+        extra_feature_dir = config['extra_feature_dir']
+        print 'begin run extra feature extractor from %s' % body_text_dir
+        print 'Save extra features to %s' % extra_feature_dir
+        FeatureExtractor.run_extra(body_text_dir, extra_feature_dir, config)
+        print 'finish save extra features to %s' % extra_feature_dir
+        return None
+
     def run_feature_filter(self):
         config = self.CONFIG
         feature_dir = config['feature_dir']
@@ -83,10 +93,11 @@ class Task(object):
     def run_feature_vector(self):
         config = self.CONFIG
         selected_feature_dir = config['selected_feature_dir']
+        extra_feature_dir = config['extra_feature_dir']
         matrix_dir = config['matrix_dir']
         print 'begin run feature vector from %s' % selected_feature_dir
         print 'save matrix to %s' % matrix_dir
-        feature_vector.run(selected_feature_dir, matrix_dir)
+        feature_vector.run(selected_feature_dir, extra_feature_dir, matrix_dir)
         print 'finish save matrix to %s' % matrix_dir
         return None
 
@@ -180,14 +191,15 @@ class Task(object):
             1: self.run_map_doc_id,
             2: self.run_text_extraction,
             3: self.run_feature_extractor,
-            4: self.run_feature_filter,
-            5: self.run_feature_vector,
-            6: self.run_svd,
-            7: self.run_consine,
-            8: self.run_cluster,
-            9: self.run_gen_result,
-            10: self.run_map_back,
-            11: self.run_eval
+            4: self.run_extra_feature_extractor,
+            5: self.run_feature_filter,
+            6: self.run_feature_vector,
+            7: self.run_svd,
+            8: self.run_consine,
+            9: self.run_cluster,
+            10: self.run_gen_result,
+            11: self.run_map_back,
+            12: self.run_eval
         }
         processes = sorted(processes_dict.items())
         for no, func in processes:
