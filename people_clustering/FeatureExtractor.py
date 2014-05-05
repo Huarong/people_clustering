@@ -163,6 +163,7 @@ class FeatureExtractor(object):
         return email_freq
 
     def extra_extract(self, name, name_body_text):
+        version = self.config['version']
         id_mapper_path = os.path.join(util.ROOT, self.id_mapper_pickle_dir, '%s.json' % name)
         id_mapper = util.load_pickle(id_mapper_path, typ='json')
         extra_features = {}
@@ -172,13 +173,24 @@ class FeatureExtractor(object):
         corpus = etree.XML(content)
         for doc in corpus:
             rank = doc.get('rank')
-            mapped_rank = id_mapper[rank]
-            # The description file opposite the snippet and title
-            title = doc.xpath('./snippet')[0].xpath('string()')
-            title_freq = self.title_tokenize(title)
+            try:
+                mapped_rank = id_mapper[rank]
+            except KeyError:
+                continue
+            if version == '2007test':
+                # The description file opposite the snippet and title in 2007 description file
+                title = doc.xpath('./snippet')[0].xpath('string()')
+                snippet = doc.get('title')
+            elif version == '2008test':
+                title = doc.get('title')
+                try:
+                    snippet = doc.xpath('./snippet')[0].xpath('string()')
+                # snippet may not exist. e.g. /data/weps-2/data/test/metadata/FRANZ_MASEREEL.xml, rank="26"
+                except IndexError:
+                    snippet = ''
             url = doc.get('url')
+            title_freq = self.title_tokenize(title)
             url_freq = self.url_tokenize(url)
-            snippet = doc.get('title')
             snippet_freq = self.snippet_tokenize(snippet)
             body_text_path = os.path.join(name_body_text, '%s.txt' % mapped_rank)
             with open(body_text_path) as f:

@@ -8,6 +8,7 @@
     "metadata_dir": "data/weps-2/data/test/metadata/",
     "body_text_dir": "pickle/2008test/bodytext/",
     "feature_dir": "pickle/2008test/features/",
+    "extra_feature_dir": "pickle/2008test/extra_features/",
     "selected_POS": ["NN"],
     "feature_threshold": 500,
     "selected_feature_dir": "pickle/2008test/NN_features/",
