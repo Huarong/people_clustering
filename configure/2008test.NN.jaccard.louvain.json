@@ -14,10 +14,10 @@
     "matrix_dir": "pickle/2008test/matrix_NN/word/",
     "is_svd": false,
     "svd_matrix_dir": "pickle/2008test/svd_matrix_NN/",
-    "similarity_method": "cosine",
+    "similarity_method": "jaccard",
     "cosine_dir": "pickle/2008test/cosine_NN/",
     "category_dir": "pickle/2008test/category/louvain_NN",
     "before_map_back_result_dir": "pickle/2008test/before_map_back_result/louvain_NN",
-    "result_dir": "pickle/2008test/result/louvain_NN_cosine",
+    "result_dir": "pickle/2008test/result/louvain_NN_jaccard",
     "result_file_extension": "xml"
 }
