@@ -75,12 +75,20 @@ def Jaccard_similarity(matrix):
     return sim_matrix
 
 
-def compute_similarity(matrix):
+def compute_similarity(matrix, method='cosine'):
     matrix = to_numpy_matrix(matrix)
-    return Jaccard_similarity(matrix)
+    method = method.lower()
+    if method == 'cosine':
+        return cosine(matrix)
+    elif method == 'euclidean':
+        return Euclidean_distance_similarity(matrix)
+    elif method == 'jaccard':
+        return Jaccard_similarity(matrix)
+    else:
+        raise Exception('Unknown similarity computing method %s' % method)
 
 
-def run(matrix_dir, cosine_dir):
+def run(matrix_dir, cosine_dir, similarity_method):
     util.makedir(cosine_dir)
 
     count = 0
@@ -91,7 +99,7 @@ def run(matrix_dir, cosine_dir):
         file_path = os.path.join(matrix_dir, file_name)
         matrix = util.load_matrix(file_path)
         # sim_matrix = cosine(matrix)
-        sim_matrix = compute_similarity(matrix)
+        sim_matrix = compute_similarity(matrix, similarity_method)
         cosine_path = os.path.join(cosine_dir, '%s.matrix' % name)
         util.dump_matrix(sim_matrix, cosine_path)
     return None

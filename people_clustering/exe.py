@@ -118,6 +118,7 @@ class Task(object):
     def run_consine(self):
         config = self.CONFIG
         cluster_method = config.get('cluster_method')
+        similarity_method = config.get('similarity_method')
         if 'nltk' == cluster_method:
             print '!!!!!!!!!!!!!! no need to run cosine for nltk cluster !!!!!!!!!!!!!!!!!!!'
             return None
@@ -129,7 +130,7 @@ class Task(object):
         cosine_dir = config['cosine_dir']
         print 'begin compute cosine similarity from %s' % matrix_dir
         print 'save to %s' % cosine_dir
-        cosine_similarity.run(matrix_dir, cosine_dir)
+        cosine_similarity.run(matrix_dir, cosine_dir, similarity_method)
         print 'finish save cosine similarity to %s' % cosine_dir
         return None
 
